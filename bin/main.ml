@@ -1,1 +1,3 @@
-let () = print_endline "Hello, World!"
+let () =
+  Printf.printf "*********SQCaml*********\n\r";
+  SQCaml.Repl.repl_loop ()
