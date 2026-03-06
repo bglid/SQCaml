@@ -1,5 +1,5 @@
 let rec repl_loop () =
-  Printf.printf "\nSQCaml > ";
+  Printf.printf "\nSQCaml > %!";
   let command = read_line () in
   match command with
   | "exit" ->
@@ -12,3 +12,5 @@ let rec repl_loop () =
   | x ->
       Printf.printf "Unrecognized command >>> %s <<<\n" x;
       repl_loop ()
+
+let start () = repl_loop ()
