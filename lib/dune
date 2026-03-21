@@ -1,2 +1,7 @@
 (library
  (name SQCaml))
+
+(ocamllex lexer)
+
+(menhir
+  (modules parser))
