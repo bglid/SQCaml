@@ -1,6 +1,6 @@
 %token EOF
 
-%start <unit> prog
+%start <unit> 
 
 %%
 
