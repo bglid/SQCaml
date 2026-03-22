@@ -1,3 +1,12 @@
+(* module Command = struct *)
+(*     type t =  *)
+(*     | EXIT   *)
+(**)
+(*     and type res =  *)
+(*         | META_COMMAND_SUCCESS *)
+(*         | META_COMMAND_UNRECOGNIZED *)
+(* end *)
+
 let rec repl_loop () =
   Printf.printf "\nSQCaml > %!";
   let command = read_line () in

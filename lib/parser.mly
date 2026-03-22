@@ -1,9 +1,13 @@
+%token <int> INT
 %token EOF
 
-%start <unit> 
+%start <Ast.expr> prog
 
 %%
 
 prog: 
-        | EOF { () }
-        ;
+  | e = expr; EOF { e }
+  ;
+
+expr:
+  | i = INT { Int i }
