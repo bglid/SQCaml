@@ -5,7 +5,7 @@
 let digit = ['0'-'9']
 let int = '-'? digit+
 let white = [' ' '\t']+
-let command = ['a'-'z' 'A'-'Z' '_']+
+let command = '-'? '-'? ['a'-'z' 'A'-'Z' '_']+
 let meta_command = ['.']['a'-'z' 'A'-'Z' '_']+
 
 rule read =
