@@ -18,6 +18,9 @@ module To_test = struct
     | Ast.COMMAND c -> Alcotest.(check string) "Command parsed" expected c
     | Ast.META_COMMAND _ -> Alcotest.fail "Expected COMMAND got META_COMMAND"
     | _ -> Alcotest.fail "Expected [Ast.COMMAND], got other"
+
+  let run_interpreter expected v =
+    Alcotest.(check string) "Interpreter test" expected v
 end
 
 let test_parsed_int () =
@@ -32,6 +35,10 @@ let test_parsed_command () =
   let expr = Interpreter.parse "exit" in
   To_test.parse_command "exit" expr
 
+let test_interpreted_int () =
+  let expr = Interpreter.interpreta "22" in
+  To_test.run_interpreter (string_of_int 22) expr
+
 let () =
   Alcotest.run "SQCaml"
     [
@@ -41,5 +48,10 @@ let () =
           Alcotest.test_case "Check parsed META_COMMAND" `Quick
             test_parsed_meta_command;
           Alcotest.test_case "Check parsed COMMAND" `Quick test_parsed_command;
+        ] );
+      ( "Interpreter tests",
+        [
+          Alcotest.test_case "Check interpreted '22' int" `Quick
+            test_interpreted_int;
         ] );
     ]
