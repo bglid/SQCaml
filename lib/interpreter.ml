@@ -8,22 +8,36 @@ let parse (s : string) : Ast.expr =
 let string_of_val (e : Ast.expr) : string =
   match e with
   | Ast.Int i -> string_of_int i
-  | Ast.COMMAND cmd -> cmd
-  | Ast.META_COMMAND mcmd -> mcmd
+  | Ast.Command cmd -> cmd
+  | Ast.Meta_Command mcmd -> mcmd
+  | Ast.Binop _ ->
+      failwith
+        "Interpreting issue, should never pass binary operation as a single \
+         value"
 
 (** [is_value e] checks if e is a value or not. Returns bool *)
 let is_value e : bool =
   match e with
   | Ast.Int _ -> true
-  | Ast.COMMAND _ -> true
-  | Ast.META_COMMAND _ -> true
+  | Ast.Command _ -> true
+  | Ast.Meta_Command _ -> true
+  | Ast.Binop _ -> false
 
 (** [step e] takes a single step of eval of [e]*)
-let step e : Ast.expr =
+let rec step e : Ast.expr =
   match e with
   | Ast.Int _ -> failwith "Int should already be a value and doesn't step!"
-  | Ast.COMMAND _ -> failwith "TODO"
-  | Ast.META_COMMAND _ -> failwith "TODO"
+  | Ast.Command _ -> failwith "TODO"
+  | Ast.Meta_Command _ -> failwith "TODO"
+  | Ast.Binop (op, e1, e2) when is_value e1 && is_value e2 ->
+      binop_step op e1 e2
+  | Ast.Binop (op, e1, e2) when is_value e1 -> Ast.Binop (op, e1, step e2)
+  | Ast.Binop (op, e1, e2) -> Ast.Binop (op, step e1, e2)
+
+and binop_step (bop : Ast.binop) (e1 : Ast.expr) (e2 : Ast.expr) =
+  match (bop, e1, e2) with
+  | Ast.Add, Ast.Int i1, Ast.Int i2 -> Ast.Int (i1 + i2)
+  | _ -> failwith "Not a Binary operations!"
 
 (** [eval e] fully evaluates [e] to a value of [v]. *)
 let rec eval (e : Ast.expr) : Ast.expr =

@@ -1,12 +1,13 @@
 (* type MetaCommandResult =  *)
-(*         | META_COMMAND_SUCCESS *)
+(*         | Meta_Command_SUCCESS *)
 
+(* NEED TO CHANGE TO Interpreter *)
 let rec repl_loop () =
   Printf.printf "\nSQCaml > %!";
   let command = read_line () in
   let parsed_command = Interpreter.parse command in
   match parsed_command with
-  | META_COMMAND mc -> (
+  | Meta_Command mc -> (
       match mc with
       | ".exit" ->
           Printf.printf "exiting SQCaml...\n";
@@ -14,7 +15,7 @@ let rec repl_loop () =
       | _ ->
           Printf.printf "Meta command not implemented yet...\n";
           repl_loop ())
-  | COMMAND com -> (
+  | Command com -> (
       match com with
       | "help" | "-h" | "--h" ->
           Printf.printf
@@ -26,6 +27,11 @@ let rec repl_loop () =
           repl_loop ())
   | Int n ->
       Printf.printf "Entered: %d" n;
+      repl_loop ()
+  (* bad and hacky for now*)
+  | Binop (_, _, _) ->
+      let bop_expr = Interpreter.interpreta command in
+      Printf.printf "%s" bop_expr;
       repl_loop ()
 
 let start () = repl_loop ()

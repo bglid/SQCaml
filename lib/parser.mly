@@ -1,6 +1,7 @@
 %token <int> INT
 %token <string> META_COMMAND
 %token <string> COMMAND
+%token SUM
 %token EOF
 
 %start <Ast.expr> prog
@@ -13,5 +14,7 @@ prog:
 
 expr:
   | i = INT           { Int i }
-  | c = COMMAND       { COMMAND c }
-  | mc = META_COMMAND { META_COMMAND mc }
+  | c = COMMAND       { Command c }
+  | mc = META_COMMAND { Meta_Command mc }
+  | e1 = expr; SUM; e2 = expr {Binop (Add, e1, e2)}
+  ;

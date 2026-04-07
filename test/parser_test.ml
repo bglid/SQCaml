@@ -8,16 +8,16 @@ module To_test = struct
 
   let parse_meta_command expected v =
     match v with
-    | Ast.META_COMMAND mc ->
+    | Ast.Meta_Command mc ->
         Alcotest.(check string) "Meta Command parsed" expected mc
-    | Ast.COMMAND _ -> Alcotest.fail "Expected META_COMMAND got COMMAND"
-    | _ -> Alcotest.fail "Expected [Ast.META_COMMAND]"
+    | Ast.Command _ -> Alcotest.fail "Expected Meta_COMMAND got COMMAND"
+    | _ -> Alcotest.fail "Expected [Ast.Meta_Command]"
 
   let parse_command expected v =
     match v with
-    | Ast.COMMAND c -> Alcotest.(check string) "Command parsed" expected c
-    | Ast.META_COMMAND _ -> Alcotest.fail "Expected COMMAND got META_COMMAND"
-    | _ -> Alcotest.fail "Expected [Ast.COMMAND], got other"
+    | Ast.Command c -> Alcotest.(check string) "Command parsed" expected c
+    | Ast.Meta_Command _ -> Alcotest.fail "Expected COMMAND got META_COMMAND"
+    | _ -> Alcotest.fail "Expected [Ast.Command], got other"
 
   let run_interpreter expected v =
     Alcotest.(check string) "Interpreter test" expected v
@@ -39,19 +39,25 @@ let test_interpreted_int () =
   let expr = Interpreter.interpreta "22" in
   To_test.run_interpreter (string_of_int 22) expr
 
+let test_add_int () =
+  let expr = Interpreter.interpreta "22 + 20" in
+  To_test.run_interpreter (string_of_int 42) expr
+
 let () =
   Alcotest.run "SQCaml"
     [
       ( "parsing-tests",
         [
           Alcotest.test_case "Check parsed int" `Quick test_parsed_int;
-          Alcotest.test_case "Check parsed META_COMMAND" `Quick
+          Alcotest.test_case "Check parsed Meta_Command" `Quick
             test_parsed_meta_command;
-          Alcotest.test_case "Check parsed COMMAND" `Quick test_parsed_command;
+          Alcotest.test_case "Check parsed Command" `Quick test_parsed_command;
         ] );
       ( "Interpreter tests",
         [
           Alcotest.test_case "Check interpreted '22' int" `Quick
             test_interpreted_int;
+          Alcotest.test_case "Check intpreted mathy '22 + 20'" `Quick
+            test_add_int;
         ] );
     ]
