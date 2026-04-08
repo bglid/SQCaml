@@ -47,6 +47,18 @@ let test_mult_int () =
   let expr = Interpreter.interpreta "2 * 20" in
   To_test.run_interpreter (string_of_int 40) expr
 
+let test_precedence_mult_int () =
+  let expr = Interpreter.interpreta "2 * 3 * 10" in
+  To_test.run_interpreter (string_of_int 60) expr
+
+let test_precedence_mult_add_int () =
+  let expr = Interpreter.interpreta "2 * 3 + 10" in
+  To_test.run_interpreter (string_of_int 16) expr
+
+let test_precedence_add_mult_int () =
+  let expr = Interpreter.interpreta "2 + 3 * 10" in
+  To_test.run_interpreter (string_of_int 32) expr
+
 let () =
   Alcotest.run "SQCaml"
     [
@@ -65,5 +77,11 @@ let () =
             test_add_int;
           Alcotest.test_case "Check intpreted mult math '2 * 20'" `Quick
             test_mult_int;
+          Alcotest.test_case "Check intpreted precedence mult mult '2 * 3 * 20'"
+            `Quick test_precedence_mult_int;
+          Alcotest.test_case "Check intpreted precedence mult add '2 * 3 + 10'"
+            `Quick test_precedence_mult_add_int;
+          Alcotest.test_case "Check intpreted precedence add mult '2 + 3 * 10'"
+            `Quick test_precedence_add_mult_int;
         ] );
     ]

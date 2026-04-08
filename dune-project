@@ -1,4 +1,5 @@
 (lang dune 3.20)
+
 (using menhir 3.0)
 
 (name SQCaml)
@@ -20,7 +21,10 @@
  (name SQCaml)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml (alcotest :with-test))
+ (depends
+  ocaml
+  menhir
+  (alcotest :with-test))
  (tags
   ("add topics" "to describe" your project)))
 
