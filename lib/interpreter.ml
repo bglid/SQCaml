@@ -37,7 +37,9 @@ let rec step e : Ast.expr =
 and binop_step (bop : Ast.binop) (e1 : Ast.expr) (e2 : Ast.expr) =
   match (bop, e1, e2) with
   | Ast.Add, Ast.Int i1, Ast.Int i2 -> Ast.Int (i1 + i2)
-  | _ -> failwith "Not a Binary operations!"
+  | Ast.Add, _, _ -> failwith "Not a Binary for addition wth!"
+  | Ast.Mult, Ast.Int i1, Ast.Int i2 -> Ast.Int (i1 * i2)
+  | Ast.Mult, _, _ -> failwith "Not a Binary for multiplication wth!"
 
 (** [eval e] fully evaluates [e] to a value of [v]. *)
 let rec eval (e : Ast.expr) : Ast.expr =

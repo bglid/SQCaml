@@ -10,6 +10,7 @@ let meta_command = ['.']['a'-'z' 'A'-'Z' '_']+
 
 rule read =
   parse
+  | "*"     { MULT }
   | "+"     { SUM }
   | white   { read lexbuf}
   | int     { INT (int_of_string(Lexing.lexeme lexbuf))}

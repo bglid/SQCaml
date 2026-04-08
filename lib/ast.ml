@@ -1,5 +1,7 @@
 (** binary operations like + and *, math! *)
-type binop = Add
+type binop =
+  | Add
+  | Mult
 
 (** Our Abstract Syntax Tree for interpreter, hooray! *)
 type expr =

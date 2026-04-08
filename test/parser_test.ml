@@ -43,6 +43,10 @@ let test_add_int () =
   let expr = Interpreter.interpreta "22 + 20" in
   To_test.run_interpreter (string_of_int 42) expr
 
+let test_mult_int () =
+  let expr = Interpreter.interpreta "2 * 20" in
+  To_test.run_interpreter (string_of_int 40) expr
+
 let () =
   Alcotest.run "SQCaml"
     [
@@ -57,7 +61,9 @@ let () =
         [
           Alcotest.test_case "Check interpreted '22' int" `Quick
             test_interpreted_int;
-          Alcotest.test_case "Check intpreted mathy '22 + 20'" `Quick
+          Alcotest.test_case "Check intpreted add math '22 + 20'" `Quick
             test_add_int;
+          Alcotest.test_case "Check intpreted mult math '2 * 20'" `Quick
+            test_mult_int;
         ] );
     ]
