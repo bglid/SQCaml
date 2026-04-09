@@ -24,6 +24,12 @@ rule read =
     | "--"    { comment lexbuf }
     | "TRUE"  { TRUE }
     | "FALSE" { FALSE }
+    | "=="    { STRUCT_COMP }
+    | "<>"    { NEQ }
+    | "<"     { LT }
+    | ">"     { GT }
+    | "<="    { LEQ }
+    | ">="    { GEQ }
     | ";;"    { ENTER }
     | white   { read lexbuf}
     | int     { INT (int_of_string(Lexing.lexeme lexbuf))}

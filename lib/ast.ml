@@ -4,6 +4,7 @@ type binop =
   | Subt
   | Mult
   | Div
+  | Lt
 [@@deriving show]
 
 (** Our Abstract Syntax Tree for interpreter, hooray! *)
