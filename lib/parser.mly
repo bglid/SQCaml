@@ -15,6 +15,8 @@
 %token SUBT
 %token EOF
 %token ENTER
+%token TRUE
+%token FALSE
 
 %left SUM
 %left SUBT
@@ -32,14 +34,20 @@ prog:
   
 
 expr:
-  | i = INT                   { Int i }
-  | f = FLOAT                 { Float f }
-  | c = COMMAND               { Command c }
-  | mc = META_COMMAND         { Meta_Command mc }
-  | e1 = expr; SUM; e2 = expr {Binop (Add, e1, e2)}
-  | e1 = expr; SUBT; e2 = expr {Binop (Subt, e1, e2)}
-  | e1 = expr; MULT; e2 = expr  {Binop (Mult, e1, e2)}
-  | e1 = expr; DIV; e2 = expr  {Binop (Div, e1, e2)}
+  | i = INT           { Int i }
+  | f = FLOAT         { Float f }
+  | c = COMMAND       { Command c }
+  | mc = META_COMMAND { Meta_Command mc }
+  | TRUE              { Bool true }
+  | FALSE             { Bool false }
+  | e1 = expr; SUM; e2 = expr 
+                      {Binop (Add, e1, e2)}
+  | e1 = expr; SUBT; e2 = expr 
+                      {Binop (Subt, e1, e2)}
+  | e1 = expr; MULT; e2 = expr  
+                      {Binop (Mult, e1, e2)}
+  | e1 = expr; DIV; e2 = expr  
+                      {Binop (Div, e1, e2)}
   | LPAREN; e = expr; RPAREN { e }
   ;
 

@@ -85,6 +85,15 @@ let test_div_float () =
   let expr = Interpreter.interpreta "20. / 2." in
   To_test.run_interpreter (string_of_float 10.) expr
 
+(* Bools *)
+let test_true () =
+  let expr = Interpreter.interpreta "TRUE" in
+  To_test.run_interpreter (string_of_bool true) expr
+
+let test_false () =
+  let expr = Interpreter.interpreta "FALSE" in
+  To_test.run_interpreter (string_of_bool false) expr
+
 (* certainty with interpreter *)
 
 let test_parens_whitespace () =
@@ -131,6 +140,11 @@ let () =
             test_sub_float;
           Alcotest.test_case "Check intpreted div float math " `Quick
             test_div_float;
+        ] );
+      ( "Interpreter bool tests",
+        [
+          Alcotest.test_case "Check TRUE" `Quick test_true;
+          Alcotest.test_case "Check FALSE" `Quick test_false;
         ] );
       ( "Interpreter functionality tests",
         [

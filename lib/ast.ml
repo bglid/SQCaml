@@ -10,6 +10,7 @@ type binop =
 type expr =
   | Int of int
   | Float of float
+  | Bool of bool
   | Command of string
   | Meta_Command of string
   | Binop of binop * expr * expr

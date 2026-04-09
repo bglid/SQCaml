@@ -9,6 +9,7 @@ let string_of_val (e : Ast.expr) : string =
   match e with
   | Ast.Int i -> string_of_int i
   | Ast.Float f -> string_of_float f
+  | Ast.Bool b -> string_of_bool b
   | Ast.Command cmd -> cmd
   | Ast.Meta_Command mcmd -> mcmd
   | Ast.Binop _ ->
@@ -23,6 +24,7 @@ let is_value e : bool =
   | Ast.Float _ -> true
   | Ast.Command _ -> true
   | Ast.Meta_Command _ -> true
+  | Ast.Bool _ -> true
   | Ast.Binop _ -> false
 
 (* NOTE: Probably want to generalize handling this, min approach for now*)
@@ -44,7 +46,8 @@ let _float_step (bop : Ast.binop) (e1 : float) (e2 : float) =
 let rec step e : Ast.expr =
   match e with
   | Ast.Int _ -> failwith "Int should already be a value and doesn't step!"
-  | Ast.Float _ -> failwith "Int should already be a value and doesn't step!"
+  | Ast.Float _ -> failwith "Float should already be a value and doesn't step!"
+  | Ast.Bool _ -> failwith "Bool should already be a value and doesn't step!"
   | Ast.Command _ -> failwith "TODO"
   | Ast.Meta_Command _ -> failwith "TODO"
   | Ast.Binop (op, e1, e2) when is_value e1 && is_value e2 ->

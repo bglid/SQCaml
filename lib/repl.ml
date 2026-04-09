@@ -35,5 +35,9 @@ let rec repl_loop () =
       let bop_expr = Interpreter.interpreta command in
       Printf.printf "%s" bop_expr;
       repl_loop ()
+  | Bool _ ->
+      let bop_expr = Interpreter.interpreta command in
+      Printf.printf "%s" bop_expr;
+      repl_loop ()
 
 let start () = repl_loop ()
