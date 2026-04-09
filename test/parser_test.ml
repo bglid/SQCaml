@@ -39,6 +39,7 @@ let test_interpreted_int () =
   let expr = Interpreter.interpreta "22" in
   To_test.run_interpreter (string_of_int 22) expr
 
+(* Int tests *)
 let test_add_int () =
   let expr = Interpreter.interpreta "22 + 20" in
   To_test.run_interpreter (string_of_int 42) expr
@@ -46,6 +47,14 @@ let test_add_int () =
 let test_mult_int () =
   let expr = Interpreter.interpreta "2 * 20" in
   To_test.run_interpreter (string_of_int 40) expr
+
+let test_sub_int () =
+  let expr = Interpreter.interpreta "22 - 20" in
+  To_test.run_interpreter (string_of_int 2) expr
+
+let test_div_int () =
+  let expr = Interpreter.interpreta "20 / 2" in
+  To_test.run_interpreter (string_of_int 10) expr
 
 let test_precedence_mult_int () =
   let expr = Interpreter.interpreta "2 * 3 * 10" in
@@ -59,6 +68,33 @@ let test_precedence_add_mult_int () =
   let expr = Interpreter.interpreta "2 + 3 * 10" in
   To_test.run_interpreter (string_of_int 32) expr
 
+(* Float tests *)
+let test_add_float () =
+  let expr = Interpreter.interpreta "22.1 + 20.0" in
+  To_test.run_interpreter (string_of_float 42.1) expr
+
+let test_mult_float () =
+  let expr = Interpreter.interpreta "2. * 20." in
+  To_test.run_interpreter (string_of_float 40.) expr
+
+let test_sub_float () =
+  let expr = Interpreter.interpreta "22. - 20." in
+  To_test.run_interpreter (string_of_float 2.) expr
+
+let test_div_float () =
+  let expr = Interpreter.interpreta "20. / 2." in
+  To_test.run_interpreter (string_of_float 10.) expr
+
+(* certainty with interpreter *)
+
+let test_parens_whitespace () =
+  let expr = Interpreter.interpreta "(1 + 1) * (2 + 2)" in
+  To_test.run_interpreter (string_of_int 8) expr
+
+let test_comments_nl () =
+  let expr = Interpreter.interpreta "--test  \n  (2 + 2)" in
+  To_test.run_interpreter (string_of_int 4) expr
+
 let () =
   Alcotest.run "SQCaml"
     [
@@ -69,7 +105,7 @@ let () =
             test_parsed_meta_command;
           Alcotest.test_case "Check parsed Command" `Quick test_parsed_command;
         ] );
-      ( "Interpreter tests",
+      ( "Interpreter int tests",
         [
           Alcotest.test_case "Check interpreted '22' int" `Quick
             test_interpreted_int;
@@ -77,11 +113,30 @@ let () =
             test_add_int;
           Alcotest.test_case "Check intpreted mult math '2 * 20'" `Quick
             test_mult_int;
+          Alcotest.test_case "Check intpreted sub math " `Quick test_sub_int;
+          Alcotest.test_case "Check intpreted div math " `Quick test_div_int;
           Alcotest.test_case "Check intpreted precedence mult mult '2 * 3 * 20'"
             `Quick test_precedence_mult_int;
           Alcotest.test_case "Check intpreted precedence mult add '2 * 3 + 10'"
             `Quick test_precedence_mult_add_int;
           Alcotest.test_case "Check intpreted precedence add mult '2 + 3 * 10'"
             `Quick test_precedence_add_mult_int;
+        ] );
+      ( "Interpreter float tests",
+        [
+          Alcotest.test_case "Check intpreted add float " `Quick test_add_float;
+          Alcotest.test_case "Check intpreted mult float math " `Quick
+            test_mult_float;
+          Alcotest.test_case "Check intpreted sub float math " `Quick
+            test_sub_float;
+          Alcotest.test_case "Check intpreted div float math " `Quick
+            test_div_float;
+        ] );
+      ( "Interpreter functionality tests",
+        [
+          Alcotest.test_case "Check parens and whitespace" `Quick
+            test_parens_whitespace;
+          Alcotest.test_case "Check comment and new line" `Quick
+            test_comments_nl;
         ] );
     ]

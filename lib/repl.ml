@@ -17,16 +17,18 @@ let rec repl_loop () =
           repl_loop ())
   | Command com -> (
       match com with
-      | "help" | "-h" | "--h" ->
-          Printf.printf
-            "help, -h, --h:\t *Prints help info for repl commands*\n";
-          Printf.printf ".exit:\t *Exits SQCaml*\n";
+      | "help" ->
+          Printf.printf "help \t *Prints help info for repl commands*\n";
+          Printf.printf ".exit \t *Exits SQCaml*\n";
           repl_loop ()
       | _ ->
           Printf.printf "Command not implemented yet";
           repl_loop ())
   | Int n ->
       Printf.printf "Entered: %d" n;
+      repl_loop ()
+  | Float n ->
+      Printf.printf "Entered: %f" n;
       repl_loop ()
   (* bad and hacky for now*)
   | Binop (_, _, _) ->
