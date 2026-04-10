@@ -94,6 +94,55 @@ let test_false () =
   let expr = Interpreter.interpreta "FALSE" in
   To_test.run_interpreter (string_of_bool false) expr
 
+(* Comparison operators *)
+let test_lt_true () =
+  let expr = Interpreter.interpreta "0 < 10" in
+  To_test.run_interpreter (string_of_bool true) expr
+
+let test_lt_false () =
+  let expr = Interpreter.interpreta "10 < 9" in
+  To_test.run_interpreter (string_of_bool false) expr
+
+let test_gt_true () =
+  let expr = Interpreter.interpreta "10 > 9" in
+  To_test.run_interpreter (string_of_bool true) expr
+
+let test_gt_false () =
+  let expr = Interpreter.interpreta "0 > 10" in
+  To_test.run_interpreter (string_of_bool false) expr
+
+let test_leq_true () =
+  let expr = Interpreter.interpreta "10 <= 10" in
+  To_test.run_interpreter (string_of_bool true) expr
+
+let test_leq_false () =
+  let expr = Interpreter.interpreta "10 <= 0" in
+  To_test.run_interpreter (string_of_bool false) expr
+
+let test_geq_true () =
+  let expr = Interpreter.interpreta "10 >= 10" in
+  To_test.run_interpreter (string_of_bool true) expr
+
+let test_geq_false () =
+  let expr = Interpreter.interpreta "9 >= 10" in
+  To_test.run_interpreter (string_of_bool false) expr
+
+let test_neq_true () =
+  let expr = Interpreter.interpreta "10 <> 1" in
+  To_test.run_interpreter (string_of_bool true) expr
+
+let test_neq_false () =
+  let expr = Interpreter.interpreta "10 <> 10" in
+  To_test.run_interpreter (string_of_bool false) expr
+
+let test_comp_eq_true () =
+  let expr = Interpreter.interpreta "10 == 10 " in
+  To_test.run_interpreter (string_of_bool true) expr
+
+let test_comp_eq_false () =
+  let expr = Interpreter.interpreta "10 == 1" in
+  To_test.run_interpreter (string_of_bool false) expr
+
 (* certainty with interpreter *)
 
 let test_parens_whitespace () =
@@ -145,6 +194,21 @@ let () =
         [
           Alcotest.test_case "Check TRUE" `Quick test_true;
           Alcotest.test_case "Check FALSE" `Quick test_false;
+        ] );
+      ( "Interpreter comparison tests",
+        [
+          Alcotest.test_case "Check <: 0 < 10 " `Quick test_lt_true;
+          Alcotest.test_case "Check <: 10 < 9 " `Quick test_lt_false;
+          Alcotest.test_case "Check >: 10 > 9 " `Quick test_gt_true;
+          Alcotest.test_case "Check >: 0 > 10 " `Quick test_gt_false;
+          Alcotest.test_case "Check <=: 10 <= 10 " `Quick test_leq_true;
+          Alcotest.test_case "Check <=: 10 <= 0 " `Quick test_leq_false;
+          Alcotest.test_case "Check >=: 10 >= 10 " `Quick test_geq_true;
+          Alcotest.test_case "Check >=: 9 >= 10 " `Quick test_geq_false;
+          Alcotest.test_case "Check <>: 10 <> 1 " `Quick test_neq_true;
+          Alcotest.test_case "Check <>: 10 <> 10 " `Quick test_neq_false;
+          Alcotest.test_case "Check ==: 10 == 10 " `Quick test_comp_eq_true;
+          Alcotest.test_case "Check ==: 10 == 1 " `Quick test_comp_eq_false;
         ] );
       ( "Interpreter functionality tests",
         [

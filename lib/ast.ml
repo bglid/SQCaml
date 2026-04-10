@@ -5,6 +5,11 @@ type binop =
   | Mult
   | Div
   | Lt
+  | Gt
+  | Leq
+  | Geq
+  | Neq
+  | Comp
 [@@deriving show]
 
 (** Our Abstract Syntax Tree for interpreter, hooray! *)

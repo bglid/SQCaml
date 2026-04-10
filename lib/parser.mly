@@ -62,5 +62,10 @@ expr:
                       {Binop (Div, e1, e2)}
   | LPAREN; e = expr; RPAREN { e }
   | e1 = expr; LT; e2 = expr { Binop (Lt, e1, e2) } 
+  | e1 = expr; GT; e2 = expr { Binop (Gt, e1, e2) } 
+  | e1 = expr; LEQ; e2 = expr { Binop (Leq, e1, e2) } 
+  | e1 = expr; GEQ; e2 = expr { Binop (Geq, e1, e2) } 
+  | e1 = expr; NEQ; e2 = expr { Binop (Neq, e1, e2) } 
+  | e1 = expr; STRUCT_COMP; e2 = expr { Binop (Comp, e1, e2) } 
   ;
 

@@ -27,13 +27,26 @@ let is_value e : bool =
   | Ast.Bool _ -> true
   | Ast.Binop _ -> false
 
-(* NOTE: Probably want to generalize handling this, min approach for now*)
+(* NOTE: Probably want to generalize handling these, min approach for now*)
+let _num_comp_step (bop : Ast.binop) e1 e2 =
+  match (bop, e1, e2) with
+  | Ast.Lt, i1, i2 -> Ast.Bool (i1 < i2)
+  | Ast.Gt, i1, i2 -> Ast.Bool (i1 > i2)
+  | Ast.Leq, i1, i2 -> Ast.Bool (i1 <= i2)
+  | Ast.Geq, i1, i2 -> Ast.Bool (i1 >= i2)
+  | Ast.Neq, i1, i2 -> Ast.Bool (i1 <> i2)
+  | Ast.Comp, i1, i2 -> Ast.Bool (i1 = i2)
+  | _, _, _ ->
+      failwith "[ERROR]: Somehow passed non comp step to _num_comp_step"
+
 let _int_step (bop : Ast.binop) (e1 : int) (e2 : int) =
   match (bop, e1, e2) with
   | Ast.Add, i1, i2 -> Ast.Int (i1 + i2)
   | Ast.Subt, i1, i2 -> Ast.Int (i1 - i2)
   | Ast.Mult, i1, i2 -> Ast.Int (i1 * i2)
   | Ast.Div, i1, i2 -> Ast.Int (i1 / i2)
+  | (Ast.Lt | Ast.Gt | Ast.Leq | Ast.Geq | Ast.Neq | Ast.Comp), _, _ ->
+      _num_comp_step bop e1 e2
 
 let _float_step (bop : Ast.binop) (e1 : float) (e2 : float) =
   match (bop, e1, e2) with
@@ -41,6 +54,8 @@ let _float_step (bop : Ast.binop) (e1 : float) (e2 : float) =
   | Ast.Subt, i1, i2 -> Ast.Float (i1 -. i2)
   | Ast.Mult, i1, i2 -> Ast.Float (i1 *. i2)
   | Ast.Div, i1, i2 -> Ast.Float (i1 /. i2)
+  | (Ast.Lt | Ast.Gt | Ast.Leq | Ast.Geq | Ast.Neq | Ast.Comp), _, _ ->
+      _num_comp_step bop e1 e2
 
 (** [step e] takes a single step of eval of [e]*)
 let rec step e : Ast.expr =
@@ -66,6 +81,16 @@ and binop_step (bop : Ast.binop) (e1 : Ast.expr) (e2 : Ast.expr) =
   | Ast.Subt, _, _ -> failwith "Not a Binary for subtraction wth!"
   | Ast.Mult, _, _ -> failwith "Not a Binary for multiplication wth!"
   | Ast.Div, _, _ -> failwith "Not a Binary for division wth!"
+  | Ast.Lt, _, _ ->
+      failwith "Need numerical values for < operation this isn't JavaScript!"
+  | Ast.Gt, _, _ ->
+      failwith "Need numerical values for > operation this isn't JavaScript!"
+  | Ast.Leq, _, _ ->
+      failwith "Need numerical values for < operation this isn't JavaScript!"
+  | Ast.Geq, _, _ ->
+      failwith "Need numerical values for > operation this isn't JavaScript!"
+  | Ast.Neq, _, _ -> failwith "Need to decide on HOW I want to implement this"
+  | Ast.Comp, _, _ -> failwith "Need to decide on HOW I want to implement this"
 
 (** [eval e] fully evaluates [e] to a value of [v]. *)
 let rec eval (e : Ast.expr) : Ast.expr =
