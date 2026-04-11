@@ -1,5 +1,4 @@
 (executable
  (public_name SQCaml)
  (name main)
- (libraries SQCaml)
- (modes byte exe))
+ (libraries SQCaml))
