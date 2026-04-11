@@ -1,5 +1,7 @@
 (lang dune 3.20)
 
+(using menhir 3.0)
+
 (name SQCaml)
 
 (generate_opam_files true)
@@ -19,7 +21,10 @@
  (name SQCaml)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml)
+ (depends
+  ocaml
+  menhir
+  (alcotest :with-test))
  (tags
   ("add topics" "to describe" your project)))
 

@@ -1,2 +1,9 @@
 (library
- (name SQCaml))
+ (name SQCaml)
+ (preprocess
+  (pps ppx_deriving.show)))
+
+(ocamllex lexer)
+
+(menhir
+ (modules parser))

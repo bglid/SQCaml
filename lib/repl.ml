@@ -1,16 +1,25 @@
+open Printf
+
 let rec repl_loop () =
-  Printf.printf "\nSQCaml > %!";
-  let command = read_line () in
-  match command with
-  | "exit" ->
-      Printf.printf "exiting SQCaml...\n";
+  printf "\nSQCaml > %!";
+  let input = read_line () in
+  let interpreted_input = Interpreter.interpret input in
+  match interpreted_input with
+  | Interpreter.Ok -> repl_loop ()
+  | Interpreter.Quit ->
+      printf "exiting SQCaml...\n";
       ()
-  | "help" | "-h" | "--h" ->
-      Printf.printf "help, -h, --h:\t *Prints help info for repl commands*\n";
-      Printf.printf "exit:\t *Exits SQCaml*\n";
+  | Interpreter.Help l ->
+      List.iter (printf "%s") l;
+      (* printf "\n"; *)
       repl_loop ()
-  | x ->
-      Printf.printf "Unrecognized command >>> %s <<<\n" x;
+  | Interpreter.Message m ->
+      printf "%s" m;
+      printf "\n";
+      repl_loop ()
+  | Interpreter.Error err ->
+      printf "%s" err;
+      printf "\n";
       repl_loop ()
 
 let start () = repl_loop ()
