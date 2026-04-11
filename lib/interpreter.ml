@@ -1,8 +1,21 @@
-(** [parse s] parses [s] into an AST. *)
-let parse (s : string) : Ast.expr =
+type execution_t =
+  | Quit
+  | Ok
+  | Help of string list
+  | Message of string
+  | Error of string
+
+let help_list =
+  [
+    "help \t *Prints help info for repl commands*\n";
+    ".exit \t *Exits SQCaml*\n";
+  ]
+
+(** [parse s] parses [s] into a top level statment/mcommand. *)
+let parse (s : string) : Ast.top_level =
   let lexbuf = Lexing.from_string s in
-  let ast = Parser.prog Lexer.read lexbuf in
-  ast
+  let res = Parser.program Lexer.read lexbuf in
+  res
 
 (** [string_of_val] converts [e] to a string. *)
 let string_of_val (e : Ast.expr) : string =
@@ -10,20 +23,16 @@ let string_of_val (e : Ast.expr) : string =
   | Ast.Int i -> string_of_int i
   | Ast.Float f -> string_of_float f
   | Ast.Bool b -> string_of_bool b
-  | Ast.Command cmd -> cmd
-  | Ast.Meta_Command mcmd -> mcmd
   | Ast.Binop _ ->
       failwith
-        "Interpreting issue, should never pass binary operation as a single \
-         value"
+        "Interpreting issue, should never pass binary operation as a single \n\
+        \         value"
 
 (** [is_value e] checks if e is a value or not. Returns bool *)
 let is_value e : bool =
   match e with
   | Ast.Int _ -> true
   | Ast.Float _ -> true
-  | Ast.Command _ -> true
-  | Ast.Meta_Command _ -> true
   | Ast.Bool _ -> true
   | Ast.Binop _ -> false
 
@@ -63,8 +72,6 @@ let rec step e : Ast.expr =
   | Ast.Int _ -> failwith "Int should already be a value and doesn't step!"
   | Ast.Float _ -> failwith "Float should already be a value and doesn't step!"
   | Ast.Bool _ -> failwith "Bool should already be a value and doesn't step!"
-  | Ast.Command _ -> failwith "TODO"
-  | Ast.Meta_Command _ -> failwith "TODO"
   | Ast.Binop (op, e1, e2) when is_value e1 && is_value e2 ->
       binop_step op e1 e2
   | Ast.Binop (op, e1, e2) when is_value e1 -> Ast.Binop (op, e1, step e2)
@@ -99,6 +106,24 @@ let rec eval (e : Ast.expr) : Ast.expr =
   else
     eval (step e)
 
-(** [interpreta s] interprets [s] by lexing + parsing it, evaluating it, and
-    converting it to a string*)
-let interpreta (s : string) : string = s |> parse |> eval |> string_of_val
+let execute_meta (md : Ast.meta_command) : execution_t =
+  match md with
+  | Ast.Exit -> Quit
+  | Ast.Help -> Help help_list
+  | Ast.Unk_mcmd _ -> Error "unk meta command: Failure"
+
+let execute_statement stmt : execution_t =
+  (* Need to improve this once the B+ is implemented *)
+  match stmt with
+  | Ast.Insert _ -> Ok
+  | Ast.Select e -> Message (e |> eval |> string_of_val)
+  | Ast.Expr e -> Message (e |> eval |> string_of_val)
+  | Ast.Unk_stmt _ -> Message "unk statment: Failure"
+
+(** [interpret input] interprets [input] by lexing + parsing it into a toplevel,
+    evaluating it, and converting it to a string*)
+let interpret (s : string) =
+  let parsed_input = s |> parse in
+  match parsed_input with
+  | Ast.Meta_command md -> execute_meta md
+  | Ast.Statement stmt -> execute_statement stmt

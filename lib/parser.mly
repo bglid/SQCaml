@@ -2,11 +2,13 @@
     open Ast
   %}
 
+/* Meta commands */
+%token EXIT HELP
 
-%token <int> INT
-%token <float> FLOAT
-%token <string> META_COMMAND
-%token <string> COMMAND
+/* statements */
+%token INSERT SELECT 
+
+/* Operators */
 %token LPAREN "("
 %token RPAREN ")"
 %token SUM
@@ -24,6 +26,11 @@
 %token LEQ
 %token GEQ
 
+/* Datatype literals */
+%token <int> INT
+%token <float> FLOAT
+%token <string> IDENTIFIER
+
 %left LT
 %left GT
 %left LEQ
@@ -35,21 +42,30 @@
 %left MULT
 %left DIV
 
-%start <Ast.expr> prog
+%start <Ast.top_level> program
 
 %%
 
-prog: 
-  | e = expr; ENTER { e }
-  | e = expr; EOF { e }
+program: 
+  | meta ENTER { $1 }
+  | statement; ENTER { $1 }
+  | meta EOF { $1 }
+  | statement; EOF { $1 }
   ;
+
+meta:
+  | EXIT              { Meta_command (Exit)}
+  | HELP              { Meta_command (Help)}
+
+
+statement:
+  | SELECT; e = expr { Statement (Select e) }
+  | INSERT; e = expr { Statement (Insert e) }
   
 
 expr:
   | i = INT           { Int i }
   | f = FLOAT         { Float f }
-  | c = COMMAND       { Command c }
-  | mc = META_COMMAND { Meta_Command mc }
   | TRUE              { Bool true }
   | FALSE             { Bool false }
   | e1 = expr; SUM; e2 = expr 

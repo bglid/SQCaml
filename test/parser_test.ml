@@ -6,26 +6,26 @@ module To_test = struct
     | Ast.Int n -> Alcotest.(check int) "Same int value" expected n
     | _ -> Alcotest.fail "Expected [Int], got ???"
 
-  let parse_meta_command expected v =
-    match v with
-    | Ast.Meta_Command mc ->
-        Alcotest.(check string) "Meta Command parsed" expected mc
-    | Ast.Command _ -> Alcotest.fail "Expected Meta_COMMAND got COMMAND"
-    | _ -> Alcotest.fail "Expected [Ast.Meta_Command]"
-
-  let parse_command expected v =
-    match v with
-    | Ast.Command c -> Alcotest.(check string) "Command parsed" expected c
-    | Ast.Meta_Command _ -> Alcotest.fail "Expected COMMAND got META_COMMAND"
-    | _ -> Alcotest.fail "Expected [Ast.Command], got other"
+  (* let parse_meta_command expected v = *)
+  (*   match v with *)
+  (*   | Ast.Meta_Command mc -> *)
+  (*       Alcotest.(check string) "Meta Command parsed" expected mc *)
+  (*   | Ast.Command _ -> Alcotest.fail "Expected Meta_COMMAND got COMMAND" *)
+  (*   | _ -> Alcotest.fail "Expected [Ast.Meta_Command]" *)
+  (**)
+  (* let parse_command expected v = *)
+  (*   match v with *)
+  (*   | Ast.Command c -> Alcotest.(check string) "Command parsed" expected c *)
+  (*   | Ast.Meta_Command _ -> Alcotest.fail "Expected COMMAND got META_COMMAND" *)
+  (*   | _ -> Alcotest.fail "Expected [Ast.Command], got other" *)
 
   let run_interpreter expected v =
     Alcotest.(check string) "Interpreter test" expected v
 end
 
 let test_parsed_int () =
-  let expr = Interpreter.parse "22" in
-  To_test.parse_int 22 expr
+  let expr = "22" |> Interpreter.interpret in
+  To_test.parse_int 22 (Interpreter.interpret expr)
 
 let test_parsed_meta_command () =
   let expr = Interpreter.parse ".exit" in
@@ -36,121 +36,121 @@ let test_parsed_command () =
   To_test.parse_command "exit" expr
 
 let test_interpreted_int () =
-  let expr = Interpreter.interpreta "22" in
+  let expr = Interpreter.interpret "22" in
   To_test.run_interpreter (string_of_int 22) expr
 
 (* Int tests *)
 let test_add_int () =
-  let expr = Interpreter.interpreta "22 + 20" in
+  let expr = Interpreter.interpret "22 + 20" in
   To_test.run_interpreter (string_of_int 42) expr
 
 let test_mult_int () =
-  let expr = Interpreter.interpreta "2 * 20" in
+  let expr = Interpreter.interpret "2 * 20" in
   To_test.run_interpreter (string_of_int 40) expr
 
 let test_sub_int () =
-  let expr = Interpreter.interpreta "22 - 20" in
+  let expr = Interpreter.interpret "22 - 20" in
   To_test.run_interpreter (string_of_int 2) expr
 
 let test_div_int () =
-  let expr = Interpreter.interpreta "20 / 2" in
+  let expr = Interpreter.interpret "20 / 2" in
   To_test.run_interpreter (string_of_int 10) expr
 
 let test_precedence_mult_int () =
-  let expr = Interpreter.interpreta "2 * 3 * 10" in
+  let expr = Interpreter.interpret "2 * 3 * 10" in
   To_test.run_interpreter (string_of_int 60) expr
 
 let test_precedence_mult_add_int () =
-  let expr = Interpreter.interpreta "2 * 3 + 10" in
+  let expr = Interpreter.interpret "2 * 3 + 10" in
   To_test.run_interpreter (string_of_int 16) expr
 
 let test_precedence_add_mult_int () =
-  let expr = Interpreter.interpreta "2 + 3 * 10" in
+  let expr = Interpreter.interpret "2 + 3 * 10" in
   To_test.run_interpreter (string_of_int 32) expr
 
 (* Float tests *)
 let test_add_float () =
-  let expr = Interpreter.interpreta "22.1 + 20.0" in
+  let expr = Interpreter.interpret "22.1 + 20.0" in
   To_test.run_interpreter (string_of_float 42.1) expr
 
 let test_mult_float () =
-  let expr = Interpreter.interpreta "2. * 20." in
+  let expr = Interpreter.interpret "2. * 20." in
   To_test.run_interpreter (string_of_float 40.) expr
 
 let test_sub_float () =
-  let expr = Interpreter.interpreta "22. - 20." in
+  let expr = Interpreter.interpret "22. - 20." in
   To_test.run_interpreter (string_of_float 2.) expr
 
 let test_div_float () =
-  let expr = Interpreter.interpreta "20. / 2." in
+  let expr = Interpreter.interpret "20. / 2." in
   To_test.run_interpreter (string_of_float 10.) expr
 
 (* Bools *)
 let test_true () =
-  let expr = Interpreter.interpreta "TRUE" in
+  let expr = Interpreter.interpret "TRUE" in
   To_test.run_interpreter (string_of_bool true) expr
 
 let test_false () =
-  let expr = Interpreter.interpreta "FALSE" in
+  let expr = Interpreter.interpret "FALSE" in
   To_test.run_interpreter (string_of_bool false) expr
 
 (* Comparison operators *)
 let test_lt_true () =
-  let expr = Interpreter.interpreta "0 < 10" in
+  let expr = Interpreter.interpret "0 < 10" in
   To_test.run_interpreter (string_of_bool true) expr
 
 let test_lt_false () =
-  let expr = Interpreter.interpreta "10 < 9" in
+  let expr = Interpreter.interpret "10 < 9" in
   To_test.run_interpreter (string_of_bool false) expr
 
 let test_gt_true () =
-  let expr = Interpreter.interpreta "10 > 9" in
+  let expr = Interpreter.interpret "10 > 9" in
   To_test.run_interpreter (string_of_bool true) expr
 
 let test_gt_false () =
-  let expr = Interpreter.interpreta "0 > 10" in
+  let expr = Interpreter.interpret "0 > 10" in
   To_test.run_interpreter (string_of_bool false) expr
 
 let test_leq_true () =
-  let expr = Interpreter.interpreta "10 <= 10" in
+  let expr = Interpreter.interpret "10 <= 10" in
   To_test.run_interpreter (string_of_bool true) expr
 
 let test_leq_false () =
-  let expr = Interpreter.interpreta "10 <= 0" in
+  let expr = Interpreter.interpret "10 <= 0" in
   To_test.run_interpreter (string_of_bool false) expr
 
 let test_geq_true () =
-  let expr = Interpreter.interpreta "10 >= 10" in
+  let expr = Interpreter.interpret "10 >= 10" in
   To_test.run_interpreter (string_of_bool true) expr
 
 let test_geq_false () =
-  let expr = Interpreter.interpreta "9 >= 10" in
+  let expr = Interpreter.interpret "9 >= 10" in
   To_test.run_interpreter (string_of_bool false) expr
 
 let test_neq_true () =
-  let expr = Interpreter.interpreta "10 <> 1" in
+  let expr = Interpreter.interpret "10 <> 1" in
   To_test.run_interpreter (string_of_bool true) expr
 
 let test_neq_false () =
-  let expr = Interpreter.interpreta "10 <> 10" in
+  let expr = Interpreter.interpret "10 <> 10" in
   To_test.run_interpreter (string_of_bool false) expr
 
 let test_comp_eq_true () =
-  let expr = Interpreter.interpreta "10 == 10 " in
+  let expr = Interpreter.interpret "10 == 10 " in
   To_test.run_interpreter (string_of_bool true) expr
 
 let test_comp_eq_false () =
-  let expr = Interpreter.interpreta "10 == 1" in
+  let expr = Interpreter.interpret "10 == 1" in
   To_test.run_interpreter (string_of_bool false) expr
 
 (* certainty with interpreter *)
 
 let test_parens_whitespace () =
-  let expr = Interpreter.interpreta "(1 + 1) * (2 + 2)" in
+  let expr = Interpreter.interpret "(1 + 1) * (2 + 2)" in
   To_test.run_interpreter (string_of_int 8) expr
 
 let test_comments_nl () =
-  let expr = Interpreter.interpreta "--test  \n  (2 + 2)" in
+  let expr = Interpreter.interpret "--test  \n  (2 + 2)" in
   To_test.run_interpreter (string_of_int 4) expr
 
 let () =
