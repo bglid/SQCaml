@@ -11,7 +11,7 @@ let rec repl_loop () =
       ()
   | Interpreter.Help l ->
       List.iter (printf "%s") l;
-      printf "\n";
+      (* printf "\n"; *)
       repl_loop ()
   | Interpreter.Message m ->
       printf "%s" m;

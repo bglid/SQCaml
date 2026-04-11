@@ -7,7 +7,7 @@ type execution_t =
 
 let help_list =
   [
-    "help \t *Prints help info for repl commands*\n";
+    ".help \t *Prints help info for repl commands*\n";
     ".exit \t *Exits SQCaml*\n";
   ]
 
@@ -23,6 +23,11 @@ let string_of_val (e : Ast.expr) : string =
   | Ast.Int i -> string_of_int i
   | Ast.Float f -> string_of_float f
   | Ast.Bool b -> string_of_bool b
+  | Ast.String s -> s
+  | Ast.Table _ ->
+      failwith
+        "Interpreting issue, should never pass binary operation as a single \n\
+        \         value"
   | Ast.Binop _ ->
       failwith
         "Interpreting issue, should never pass binary operation as a single \n\
@@ -34,7 +39,9 @@ let is_value e : bool =
   | Ast.Int _ -> true
   | Ast.Float _ -> true
   | Ast.Bool _ -> true
+  | Ast.String _ -> true
   | Ast.Binop _ -> false
+  | Ast.Table _ -> false
 
 (* NOTE: Probably want to generalize handling these, min approach for now*)
 let _num_comp_step (bop : Ast.binop) e1 e2 =
@@ -66,16 +73,22 @@ let _float_step (bop : Ast.binop) (e1 : float) (e2 : float) =
   | (Ast.Lt | Ast.Gt | Ast.Leq | Ast.Geq | Ast.Neq | Ast.Comp), _, _ ->
       _num_comp_step bop e1 e2
 
+let _table_step (table : Ast.table) =
+  match table with
+  | Ast.Id id -> Ast.String id
+
 (** [step e] takes a single step of eval of [e]*)
 let rec step e : Ast.expr =
   match e with
   | Ast.Int _ -> failwith "Int should already be a value and doesn't step!"
   | Ast.Float _ -> failwith "Float should already be a value and doesn't step!"
   | Ast.Bool _ -> failwith "Bool should already be a value and doesn't step!"
+  | Ast.String _ -> failwith "Bool should already be a value and doesn't step!"
   | Ast.Binop (op, e1, e2) when is_value e1 && is_value e2 ->
       binop_step op e1 e2
   | Ast.Binop (op, e1, e2) when is_value e1 -> Ast.Binop (op, e1, step e2)
   | Ast.Binop (op, e1, e2) -> Ast.Binop (op, step e1, e2)
+  | Ast.Table id -> _table_step id
 
 (* handles int and float by converting int -> float *)
 and binop_step (bop : Ast.binop) (e1 : Ast.expr) (e2 : Ast.expr) =

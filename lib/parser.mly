@@ -6,7 +6,7 @@
 %token EXIT HELP
 
 /* statements */
-%token INSERT SELECT 
+%token INSERT SELECT
 
 /* Operators */
 %token LPAREN "("
@@ -51,6 +51,7 @@ program:
   | statement; ENTER { $1 }
   | meta EOF { $1 }
   | statement; EOF { $1 }
+  | e = expr; EOF { Statement (Expr e ) }
   ;
 
 meta:
@@ -83,5 +84,6 @@ expr:
   | e1 = expr; GEQ; e2 = expr { Binop (Geq, e1, e2) } 
   | e1 = expr; NEQ; e2 = expr { Binop (Neq, e1, e2) } 
   | e1 = expr; STRUCT_COMP; e2 = expr { Binop (Comp, e1, e2) } 
+  | id = IDENTIFIER   { Table (Id id) }
   ;
 

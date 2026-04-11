@@ -12,15 +12,17 @@ type binop =
   | Comp
 [@@deriving show]
 
+type table = Id of string [@@deriving show]
+
 (** Our Abstract Syntax Tree for interpreter, hooray! *)
 type expr =
   | Int of int
   | Float of float
   | Bool of bool
+  | String of string
+  | Table of table
   | Binop of binop * expr * expr
 [@@deriving show]
-
-(* plugging in temps for now *)
 
 (** Statments like INSERT *)
 type statement =

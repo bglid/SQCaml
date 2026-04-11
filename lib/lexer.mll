@@ -12,8 +12,8 @@
   let () = 
     List.iter (fun (word, stmt) -> Hashtbl.add stmts word stmt)
       [
-      "insert", INSERT;
-      "select", SELECT;
+      "INSERT", INSERT;
+      "SELECT", SELECT;
     ]
 }
 
@@ -54,7 +54,7 @@ rule read =
         {try Hashtbl.find meta_cmds md 
           with Not_found -> IDENTIFIER md}
     | statement as s
-        {try Hashtbl.find stmts (String.uppercase_ascii s)  
+        {try Hashtbl.find stmts (String.uppercase_ascii s)
           with Not_found -> IDENTIFIER s}
     | newline { Lexing.new_line lexbuf; read lexbuf }
     | eof     { EOF }
