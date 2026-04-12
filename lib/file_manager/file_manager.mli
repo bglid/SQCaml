@@ -12,5 +12,14 @@ val get_blocksize : t -> int
 val get_file : t -> string -> Unix.file_descr
 (** Return file in Unix description *)
 
-val read : t -> Page.Block.t
+val read : t -> Page.Block.t -> Page.Page.t -> unit
 (** Read block into the page *)
+
+val write : t -> Page.Block.t -> Page.Page.t -> unit
+(** Write block into the page *)
+
+val size : t -> string -> int
+(** return number of blocks in the file *)
+
+val append : t -> string -> Page.Block.t
+(** Append a block in a file and return the block id *)
