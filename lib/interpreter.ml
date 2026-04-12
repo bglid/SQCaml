@@ -14,7 +14,7 @@ let help_list =
 (** [parse s] parses [s] into a top level statment/mcommand. *)
 let parse (s : string) : Ast.top_level =
   let lexbuf = Lexing.from_string s in
-  let res = Parser.program Lexer.read lexbuf in
+  let res = Parser.prog Lexer.read lexbuf in
   res
 
 (** [string_of_val] converts [e] to a string. *)
@@ -24,10 +24,6 @@ let string_of_val (e : Ast.expr) : string =
   | Ast.Float f -> string_of_float f
   | Ast.Bool b -> string_of_bool b
   | Ast.String s -> s
-  | Ast.Table _ ->
-      failwith
-        "Interpreting issue, should never pass binary operation as a single \n\
-        \         value"
   | Ast.Binop _ ->
       failwith
         "Interpreting issue, should never pass binary operation as a single \n\
@@ -41,10 +37,9 @@ let is_value e : bool =
   | Ast.Bool _ -> true
   | Ast.String _ -> true
   | Ast.Binop _ -> false
-  | Ast.Table _ -> false
 
 (* NOTE: Probably want to generalize handling these, min approach for now*)
-let _num_comp_step (bop : Ast.binop) e1 e2 =
+let _num_comp_step (bop : Ast.binop_t) e1 e2 =
   match (bop, e1, e2) with
   | Ast.Lt, i1, i2 -> Ast.Bool (i1 < i2)
   | Ast.Gt, i1, i2 -> Ast.Bool (i1 > i2)
@@ -55,7 +50,7 @@ let _num_comp_step (bop : Ast.binop) e1 e2 =
   | _, _, _ ->
       failwith "[ERROR]: Somehow passed non comp step to _num_comp_step"
 
-let _int_step (bop : Ast.binop) (e1 : int) (e2 : int) =
+let _int_step (bop : Ast.binop_t) (e1 : int) (e2 : int) =
   match (bop, e1, e2) with
   | Ast.Add, i1, i2 -> Ast.Int (i1 + i2)
   | Ast.Subt, i1, i2 -> Ast.Int (i1 - i2)
@@ -64,7 +59,7 @@ let _int_step (bop : Ast.binop) (e1 : int) (e2 : int) =
   | (Ast.Lt | Ast.Gt | Ast.Leq | Ast.Geq | Ast.Neq | Ast.Comp), _, _ ->
       _num_comp_step bop e1 e2
 
-let _float_step (bop : Ast.binop) (e1 : float) (e2 : float) =
+let _float_step (bop : Ast.binop_t) (e1 : float) (e2 : float) =
   match (bop, e1, e2) with
   | Ast.Add, i1, i2 -> Ast.Float (i1 +. i2)
   | Ast.Subt, i1, i2 -> Ast.Float (i1 -. i2)
@@ -73,9 +68,9 @@ let _float_step (bop : Ast.binop) (e1 : float) (e2 : float) =
   | (Ast.Lt | Ast.Gt | Ast.Leq | Ast.Geq | Ast.Neq | Ast.Comp), _, _ ->
       _num_comp_step bop e1 e2
 
-let _table_step (table : Ast.table) =
-  match table with
-  | Ast.Id id -> Ast.String id
+(* let _table_step (table : Ast.table) = *)
+(*   match table with *)
+(*   | Ast.Id id -> Ast.String id *)
 
 (** [step e] takes a single step of eval of [e]*)
 let rec step e : Ast.expr =
@@ -88,10 +83,10 @@ let rec step e : Ast.expr =
       binop_step op e1 e2
   | Ast.Binop (op, e1, e2) when is_value e1 -> Ast.Binop (op, e1, step e2)
   | Ast.Binop (op, e1, e2) -> Ast.Binop (op, step e1, e2)
-  | Ast.Table id -> _table_step id
+(* | Ast.Table id -> _table_step id *)
 
 (* handles int and float by converting int -> float *)
-and binop_step (bop : Ast.binop) (e1 : Ast.expr) (e2 : Ast.expr) =
+and binop_step (bop : Ast.binop_t) (e1 : Ast.expr) (e2 : Ast.expr) =
   match (bop, e1, e2) with
   | _, Ast.Int i1, Ast.Int i2 -> _int_step bop i1 i2
   | _, Ast.Float f1, Ast.Float f2 -> _float_step bop f1 f2
@@ -128,6 +123,7 @@ let execute_meta (md : Ast.meta_command) : execution_t =
 let execute_statement stmt : execution_t =
   (* Need to improve this once the B+ is implemented *)
   match stmt with
+  | Ast.Create _ -> Ok
   | Ast.Insert _ -> Ok
   | Ast.Select e -> Message (e |> eval |> string_of_val)
   | Ast.Expr e -> Message (e |> eval |> string_of_val)
