@@ -1,4 +1,8 @@
+(** The Filemanager is how we parse through multiple files in our B+ tree
+    storage implementation. *)
+
 type t
+(** Our file manager is how we interact with blocks on the disk *)
 
 val make : db_dirname:string -> block_size:int -> t
 (** Init the file manager *)
