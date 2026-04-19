@@ -4,9 +4,7 @@
  (name SQCaml)
  (preprocess
   (pps ppx_deriving.show))
- (libraries unix)
- (instrumentation
-  (backend bisect_ppx)))
+ (libraries unix))
 
 (ocamllex lexer)
 
