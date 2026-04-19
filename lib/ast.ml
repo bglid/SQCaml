@@ -1,5 +1,5 @@
 (** binary operations like + and *, math! *)
-type binop =
+type binop_t =
   | Add
   | Subt
   | Mult
@@ -12,7 +12,12 @@ type binop =
   | Comp
 [@@deriving show]
 
-type table = Id of string [@@deriving show]
+type column_types =
+  | Int_col
+  | Float_col
+  | String_col
+  | Bool_col
+[@@deriving show]
 
 (** Our Abstract Syntax Tree for interpreter, hooray! *)
 type expr =
@@ -20,13 +25,28 @@ type expr =
   | Float of float
   | Bool of bool
   | String of string
-  | Table of table
-  | Binop of binop * expr * expr
+  | Binop of binop_t * expr * expr
 [@@deriving show]
+
+type create_t = {
+  table_name : string;
+  columns : (string * column_types) list;
+}
+[@@deriving show]
+(** Handles creating new tables *)
+
+type insert_t = {
+  table_name : string;
+  columns : string list option;
+  values : expr list;
+}
+[@@deriving show]
+(** Handles inserting into existing tables *)
 
 (** Statments like INSERT *)
 type statement =
-  | Insert of expr
+  | Create of create_t
+  | Insert of insert_t
   | Select of expr
   | Expr of expr
   | Unk_stmt of string
