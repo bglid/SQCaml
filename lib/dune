@@ -2,6 +2,7 @@
 
 (library
  (name SQCaml)
+ (public_name SQCaml)
  (preprocess
   (pps ppx_deriving.show))
  (libraries unix))

@@ -24,6 +24,8 @@
  (depends
   ocaml
   menhir
+  ppx_deriving
+  base-unix
   (alcotest :with-test))
  (tags
   ("add topics" "to describe" your project)))
