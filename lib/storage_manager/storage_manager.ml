@@ -1,4 +1,4 @@
-open File_manager
+(* open File_manager *)
 
 (* Block 0 is for the freelist. If it's not in the freelist it's being used *)
 (* NOTE: The 'head_page', is top of the freelist *)
@@ -19,7 +19,7 @@ let set_head_page ~storage_manager (page : Page.Page.t) =
   File_manager.write storage_manager.file_manager block_id
     storage_manager.head_page
 
-let make ~file_manager ~storage_file =
+let make ~(file_manager : File_manager.t) ~(storage_file : string) =
   let block_size = File_manager.get_blocksize file_manager in
   let head_page = Page.Page.make ~block_size in
   let block = Page.Block.make ~filename:storage_file ~block_num:0 in

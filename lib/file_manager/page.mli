@@ -1,6 +1,3 @@
-(** The Filemanager is how we parse through multiple files in our B+ tree
-    storage implementation. *)
-
 (** Blocks are representative of the Blocks on the Disk *)
 module Block : sig
   type t
