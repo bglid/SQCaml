@@ -1,6 +1,6 @@
 (** Blocks are representative of the Blocks on the Disk *)
 module Block : sig
-  type t
+  type t [@@deriving show]
 
   val file_name : t -> string
   (** Return the file name upon giving the block*)
@@ -23,7 +23,7 @@ end
 (** Page is a module that allows us to buffer bytes in memory. It allows us to
     do work on the blocks before writing them back to disk*)
 module Page : sig
-  type t
+  type t [@@deriving show]
 
   val make : block_size:int -> t
   (** Calls Bytes.make to init a block of size ~block_size and returns an init

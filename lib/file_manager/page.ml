@@ -1,5 +1,5 @@
 module Block = struct
-  type t = string * int
+  type t = string * int [@@deriving show]
 
   let file_name (filename, _) = filename
   let block_num (_, blocknum) = blocknum
@@ -9,7 +9,7 @@ module Block = struct
 end
 
 module Page = struct
-  type t = bytes
+  type t = bytes [@@deriving show]
 
   let make ~block_size = Bytes.make block_size '\000'
   let from_bytes b = b

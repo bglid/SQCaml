@@ -1,7 +1,11 @@
 (** This is what our B+ tree will interact with to interact with the file
     manager *)
 
-type t
+type t = {
+  file_manager : File_manager.t;
+  storage_file : string;
+  mutable head_page : Page.Page.t (* First page contains metadata *);
+}
 
 val make : file_manager:File_manager.t -> storage_file:string -> t
 (** Takes a file manager and a string to create a new storage manager *)
