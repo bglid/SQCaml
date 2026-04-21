@@ -24,9 +24,16 @@ type t = {
 let leaf_serial = Int32.of_int 2863311530 (* 0xAAAAAAAA *)
 let internal_serial = Int32.of_int 3149642683
 (* 0xBBBBBBBB *)
-(* let unused_pointer_serial = 3722304989 (*0xDDDDDDDD *) *)
 
 let serialize_node (node_t : node_type) : Int32.t =
   match node_t with
   | Leaf -> leaf_serial
   | Internal -> internal_serial
+
+let int32_to_node_t (i32 : Int32.t) : node_type =
+  if i32 = leaf_serial then
+    Leaf
+  else if i32 = internal_serial then
+    Internal
+  else
+    failwith "WRONG i32!"

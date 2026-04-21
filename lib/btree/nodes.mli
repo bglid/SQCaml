@@ -18,3 +18,4 @@ type t = {
 (** Data structure for nodes *)
 
 val serialize_node : node_type -> Int32.t
+val int32_to_node_t : Int32.t -> node_type
