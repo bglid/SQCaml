@@ -3,7 +3,10 @@ type t =
   | TInteger
 [@@deriving show]
 
-type value [@@deriving show]
+type value =
+  | Varchar of string
+  | Integer of Int32.t
+[@@deriving show]
 
 val less_than : value -> value -> bool
 val equals : value -> value -> bool
