@@ -1,5 +1,3 @@
-(* open File_manager *)
-
 (* Block 0 is for the freelist. If it's not in the freelist it's being used *)
 (* NOTE: The 'head_page', is top of the freelist *)
 

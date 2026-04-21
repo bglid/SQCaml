@@ -54,6 +54,7 @@ let serialize (node : Nodes.t) (block_size : int) : Page.Page.t =
   page
 
 let get_num_keys (block_size : int) (key_type : Keys.t) : int =
+  (* 12 bytes needed for metadata + 4 bytes for final sib pointer*)
   (block_size - 16) / (4 + Keys.size_of_key key_type)
 
 let unused_pointer_serial = 3722304989 (*0xDDDDDDDD *)
@@ -99,3 +100,23 @@ let deserialize (page : Page.Page.t) (key_type : Keys.t) (block_size : int) :
       Int32.to_int (Page.Page.get_int32 page sib_pointer_offset);
 
   { node_t = node_type; parent; cur_size; keys; pointers; capacity; key_type }
+
+(* writing nodes to disk *)
+let write_node (btree : t) (node : Nodes.t) (n : int) : unit =
+  let block_size = File_manager.get_blocksize btree.storage_m.file_manager in
+  let page = serialize node block_size in
+  Storage_manager.update_block_num ~storage_m:btree.storage_m ~block_num:n ~page
+
+let write_node_append (btree : t) (node : Nodes.t) : int =
+  let block_size = File_manager.get_blocksize btree.storage_m.file_manager in
+  let page = serialize node block_size in
+  let block = Storage_manager.append ~storage_m:btree.storage_m ~page in
+  Page.Block.block_num block
+
+(* getting a block from the btree and deserialize it into a node *)
+let get_node (btree : t) (p : int) : Nodes.t =
+  let block_size = File_manager.get_blocksize btree.storage_m.file_manager in
+  let page =
+    Storage_manager.get_block ~storage_m:btree.storage_m ~block_num:p
+  in
+  deserialize page btree.key block_size
