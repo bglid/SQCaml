@@ -127,7 +127,7 @@ let execute_statement stmt : execution_t =
   | Ast.Insert _ -> Ok
   | Ast.Select e -> Message (e |> eval |> string_of_val)
   | Ast.Expr e -> Message (e |> eval |> string_of_val)
-  | Ast.Unk_stmt _ -> Message "unk statment: Failure"
+  | Ast.Unk_stmt u -> Message u
 
 (** [interpret input] interprets [input] by lexing + parsing it into a toplevel,
     evaluating it, and converting it to a string*)

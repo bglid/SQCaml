@@ -6,7 +6,8 @@
 %token EXIT HELP
 
 /* statements */
-%token INSERT SELECT
+%token INSERT SELECT 
+%token <string> UNK_COM 
 
 /* Operators */
 %token LPAREN "("
@@ -30,6 +31,7 @@
 %token <int> INT
 %token <float> FLOAT
 %token <string> IDENTIFIER
+%token <string> STRING
 
 %left LT
 %left GT
@@ -64,6 +66,7 @@ statement:
   (* | query { $1 } *)
   | SELECT; e = expr { Statement (Select e) }
   | INSERT; e = expr { Statement (Expr e) }
+  | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
 (*   | INSERT IDENTIFIER field_list {} *)
 
 field:
