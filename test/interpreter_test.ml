@@ -1,24 +1,6 @@
 open SQCaml
 
 module To_test = struct
-  (* let parse_int expected v = *)
-  (*   match v with *)
-  (*   | Ast.Int n -> Alcotest.(check int) "Same int value" expected n *)
-  (*   | _ -> Alcotest.fail "Expected [Int], got ???" *)
-
-  (* let parse_meta_command expected v = *)
-  (*   match v with *)
-  (*   | Ast.Meta_command mc -> *)
-  (*       Alcotest.(check string) "Meta Command parsed" expected mc *)
-  (*   | Ast.Statement _ -> Alcotest.fail "Expected Meta_COMMAND got COMMAND" *)
-  (*   | _ -> Alcotest.fail "Expected [Ast.Meta_command]" *)
-  (**)
-  (* let parse_command expected v = *)
-  (*   match v with *)
-  (*   | Ast.Statement c -> Alcotest.(check string) "Command parsed" expected c *)
-  (*   | Ast.Meta_command _ -> Alcotest.fail "Expected COMMAND got META_COMMAND" *)
-  (*   | _ -> Alcotest.fail "Expected [Ast.Command], got other" *)
-
   let run_interpreter expected v =
     Alcotest.(check string) "Interpreter test" expected v
 end
@@ -30,18 +12,6 @@ let test_helper (exec : Interpreter.execution_t) : string =
   | Interpreter.Message s -> s
   | Interpreter.Error err -> err
   | Interpreter.Help _ -> "help" (* need to improve this *)
-
-(* let test_parsed_int () = *)
-(*   let expr = "22" |> Interpreter.parse |> in *)
-(*   To_test.parse_int 22 expr *)
-
-(* let test_parsed_meta_command () = *)
-(*   let expr = Interpreter.parse ".exit" in *)
-(*   To_test.parse_meta_command ".exit" expr *)
-(**)
-(* let test_parsed_command () = *)
-(*   let expr = Interpreter.parse "exit" in *)
-(*   To_test.parse_command "exit" expr *)
 
 let test_interpreted_int () =
   let expr = Interpreter.interpret "22" in
@@ -161,6 +131,29 @@ let test_comments_nl () =
   let expr = Interpreter.interpret "--test  \n  (2 + 2)" in
   To_test.run_interpreter (string_of_int 4) (test_helper expr)
 
+(* improved interpreter tests *)
+let test_meta_exit () =
+  let res = test_helper (Interpreter.interpret ".exit") in
+  Alcotest.(check string) "exit recognized" ".exit" res
+
+let test_unknown_command () =
+  let res = test_helper (Interpreter.interpret "nonsense") in
+  Alcotest.(check bool)
+    "unknown command errors" true
+    (String.starts_with ~prefix:"error:" res)
+
+let test_insert_statement_recognized () =
+  let res = test_helper (Interpreter.interpret "insert 1 englewood_avenue G") in
+  Alcotest.(check bool)
+    "insert accepted for execution" true
+    (res = "ok" || String.starts_with ~prefix:"error:" res = false)
+
+let test_select_statement_recognized () =
+  let res = test_helper (Interpreter.interpret "select") in
+  Alcotest.(check bool)
+    "select recognized" true
+    (res = "ok" || String.starts_with ~prefix:"error:" res = false)
+
 let tests =
   [
     Alcotest.test_case "Check interpreted '22' int" `Quick test_interpreted_int;
@@ -195,4 +188,11 @@ let tests =
     Alcotest.test_case "Check parens and whitespace" `Quick
       test_parens_whitespace;
     Alcotest.test_case "Check comment and new line" `Quick test_comments_nl;
+    (* improved interpreter tests *)
+    Alcotest.test_case "meta .exit" `Quick test_meta_exit;
+    Alcotest.test_case "unk command" `Quick test_unknown_command;
+    Alcotest.test_case "insert recognized" `Quick
+      test_insert_statement_recognized;
+    Alcotest.test_case "select recognized" `Quick
+      test_select_statement_recognized;
   ]
