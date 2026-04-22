@@ -161,68 +161,38 @@ let test_comments_nl () =
   let expr = Interpreter.interpret "--test  \n  (2 + 2)" in
   To_test.run_interpreter (string_of_int 4) (test_helper expr)
 
-let () =
-  Alcotest.run "SQCaml"
-    [
-      (* ( "parsing-tests", *)
-      (*   [ *)
-      (*     Alcotest.test_case "Check parsed int" `Quick test_parsed_int; *)
-      (*     Alcotest.test_case "Check parsed Meta_Command" `Quick *)
-      (*       test_parsed_meta_command; *)
-      (*     Alcotest.test_case "Check parsed Command" `Quick test_parsed_command; *)
-      (*   ] ); *)
-      ( "Interpreter int tests",
-        [
-          Alcotest.test_case "Check interpreted '22' int" `Quick
-            test_interpreted_int;
-          Alcotest.test_case "Check intpreted add math '22 + 20'" `Quick
-            test_add_int;
-          Alcotest.test_case "Check intpreted mult math '2 * 20'" `Quick
-            test_mult_int;
-          Alcotest.test_case "Check intpreted sub math " `Quick test_sub_int;
-          Alcotest.test_case "Check intpreted div math " `Quick test_div_int;
-          Alcotest.test_case "Check intpreted precedence mult mult '2 * 3 * 20'"
-            `Quick test_precedence_mult_int;
-          Alcotest.test_case "Check intpreted precedence mult add '2 * 3 + 10'"
-            `Quick test_precedence_mult_add_int;
-          Alcotest.test_case "Check intpreted precedence add mult '2 + 3 * 10'"
-            `Quick test_precedence_add_mult_int;
-        ] );
-      ( "Interpreter float tests",
-        [
-          Alcotest.test_case "Check intpreted add float " `Quick test_add_float;
-          Alcotest.test_case "Check intpreted mult float math " `Quick
-            test_mult_float;
-          Alcotest.test_case "Check intpreted sub float math " `Quick
-            test_sub_float;
-          Alcotest.test_case "Check intpreted div float math " `Quick
-            test_div_float;
-        ] );
-      ( "Interpreter bool tests",
-        [
-          Alcotest.test_case "Check TRUE" `Quick test_true;
-          Alcotest.test_case "Check FALSE" `Quick test_false;
-        ] );
-      ( "Interpreter comparison tests",
-        [
-          Alcotest.test_case "Check <: 0 < 10 " `Quick test_lt_true;
-          Alcotest.test_case "Check <: 10 < 9 " `Quick test_lt_false;
-          Alcotest.test_case "Check >: 10 > 9 " `Quick test_gt_true;
-          Alcotest.test_case "Check >: 0 > 10 " `Quick test_gt_false;
-          Alcotest.test_case "Check <=: 10 <= 10 " `Quick test_leq_true;
-          Alcotest.test_case "Check <=: 10 <= 0 " `Quick test_leq_false;
-          Alcotest.test_case "Check >=: 10 >= 10 " `Quick test_geq_true;
-          Alcotest.test_case "Check >=: 9 >= 10 " `Quick test_geq_false;
-          Alcotest.test_case "Check <>: 10 <> 1 " `Quick test_neq_true;
-          Alcotest.test_case "Check <>: 10 <> 10 " `Quick test_neq_false;
-          Alcotest.test_case "Check ==: 10 == 10 " `Quick test_comp_eq_true;
-          Alcotest.test_case "Check ==: 10 == 1 " `Quick test_comp_eq_false;
-        ] );
-      ( "Interpreter functionality tests",
-        [
-          Alcotest.test_case "Check parens and whitespace" `Quick
-            test_parens_whitespace;
-          Alcotest.test_case "Check comment and new line" `Quick
-            test_comments_nl;
-        ] );
-    ]
+let tests =
+  [
+    Alcotest.test_case "Check interpreted '22' int" `Quick test_interpreted_int;
+    Alcotest.test_case "Check intpreted add math '22 + 20'" `Quick test_add_int;
+    Alcotest.test_case "Check intpreted mult math '2 * 20'" `Quick test_mult_int;
+    Alcotest.test_case "Check intpreted sub math " `Quick test_sub_int;
+    Alcotest.test_case "Check intpreted div math " `Quick test_div_int;
+    Alcotest.test_case "Check intpreted precedence mult mult '2 * 3 * 20'"
+      `Quick test_precedence_mult_int;
+    Alcotest.test_case "Check intpreted precedence mult add '2 * 3 + 10'" `Quick
+      test_precedence_mult_add_int;
+    Alcotest.test_case "Check intpreted precedence add mult '2 + 3 * 10'" `Quick
+      test_precedence_add_mult_int;
+    Alcotest.test_case "Check intpreted add float " `Quick test_add_float;
+    Alcotest.test_case "Check intpreted mult float math " `Quick test_mult_float;
+    Alcotest.test_case "Check intpreted sub float math " `Quick test_sub_float;
+    Alcotest.test_case "Check intpreted div float math " `Quick test_div_float;
+    Alcotest.test_case "Check TRUE" `Quick test_true;
+    Alcotest.test_case "Check FALSE" `Quick test_false;
+    Alcotest.test_case "Check <: 0 < 10 " `Quick test_lt_true;
+    Alcotest.test_case "Check <: 10 < 9 " `Quick test_lt_false;
+    Alcotest.test_case "Check >: 10 > 9 " `Quick test_gt_true;
+    Alcotest.test_case "Check >: 0 > 10 " `Quick test_gt_false;
+    Alcotest.test_case "Check <=: 10 <= 10 " `Quick test_leq_true;
+    Alcotest.test_case "Check <=: 10 <= 0 " `Quick test_leq_false;
+    Alcotest.test_case "Check >=: 10 >= 10 " `Quick test_geq_true;
+    Alcotest.test_case "Check >=: 9 >= 10 " `Quick test_geq_false;
+    Alcotest.test_case "Check <>: 10 <> 1 " `Quick test_neq_true;
+    Alcotest.test_case "Check <>: 10 <> 10 " `Quick test_neq_false;
+    Alcotest.test_case "Check ==: 10 == 10 " `Quick test_comp_eq_true;
+    Alcotest.test_case "Check ==: 10 == 1 " `Quick test_comp_eq_false;
+    Alcotest.test_case "Check parens and whitespace" `Quick
+      test_parens_whitespace;
+    Alcotest.test_case "Check comment and new line" `Quick test_comments_nl;
+  ]
