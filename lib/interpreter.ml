@@ -124,10 +124,10 @@ let execute_statement stmt : execution_t =
   (* Need to improve this once the B+ is implemented *)
   match stmt with
   | Ast.Create _ -> Ok
-  | Ast.Insert _ -> Ok
-  | Ast.Select e -> Message (e |> eval |> string_of_val)
+  | Ast.Insert i -> Message (Insert.execute_insert i)
+  | Ast.Select s -> Message (Select.execute_select s)
   | Ast.Expr e -> Message (e |> eval |> string_of_val)
-  | Ast.Unk_stmt _ -> Message "unk statment: Failure"
+  | Ast.Unk_stmt u -> Message u
 
 (** [interpret input] interprets [input] by lexing + parsing it into a toplevel,
     evaluating it, and converting it to a string*)

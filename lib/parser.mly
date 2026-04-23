@@ -6,17 +6,18 @@
 %token EXIT HELP
 
 /* statements */
-%token INSERT SELECT
+%token INSERT SELECT INTO VALUES FROM
+%token <string> UNK_COM 
 
 /* Operators */
 %token LPAREN "("
 %token RPAREN ")"
+%token COMMA
 %token SUM
 %token MULT
 %token DIV
 %token SUBT
 %token EOF
-%token ENTER
 %token TRUE
 %token FALSE
 %token STRUCT_COMP
@@ -30,6 +31,7 @@
 %token <int> INT
 %token <float> FLOAT
 %token <string> IDENTIFIER
+%token <string> STRING
 
 %left LT
 %left GT
@@ -47,8 +49,6 @@
 %%
 
 prog: 
-  | meta ENTER { $1 }
-  | statement; ENTER { $1 }
   | meta EOF { $1 }
   | statement; EOF { $1 }
   | e = expr; EOF { Statement (Expr e ) }
@@ -58,26 +58,32 @@ meta:
   | EXIT              { Meta_command (Exit)}
   | HELP              { Meta_command (Help)}
 
-
-statement:
-  (* | create { $1 } *)
-  (* | query { $1 } *)
-  | SELECT; e = expr { Statement (Select e) }
-  | INSERT; e = expr { Statement (Expr e) }
-(*   | INSERT IDENTIFIER field_list {} *)
-
 field:
   | IDENTIFIER { $1 }
   ;
 
+constant:
+  | STRING            { Constant.make_string $1 }
+  | INT               { Constant.make_int (Int32.of_int $1) }
+
+
+constant_list:
+  | constant { [$1] }
+  | constant COMMA constant_list {$1 :: $3}
+
+
+statement:
+  (* | SELECT; e = expr { Statement (Select e) } *)
+  | SELECT field_list FROM IDENTIFIER {Statement (Select (Select.make $2 $4))}
+  | INSERT INTO IDENTIFIER LPAREN field_list RPAREN VALUES LPAREN constant_list RPAREN { Statement ( Insert (Insert.make $3 $5 $9))}
+  | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
+
+
 field_list:
   | field { [$1] }
-  | field field_list { $1 :: $2 }
+  | field COMMA field_list { $1 :: $3 }
   ;
 
-(* create: *)
-(*   | INSERT IDENTIFIER field_list {} *)
-  
 
 expr:
   | i = INT           { Int i }

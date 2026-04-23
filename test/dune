@@ -1,3 +1,4 @@
 (tests
- (names test_SQCaml interpreter_test table_test)
- (libraries SQCaml alcotest))
+ (names test_SQCaml)
+ (libraries SQCaml alcotest)
+ (modules test_SQCaml interpreter_test table_test))
