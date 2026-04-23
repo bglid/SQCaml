@@ -143,10 +143,15 @@ let test_unknown_command () =
     (String.starts_with ~prefix:"error:" res)
 
 let test_insert_statement_recognized () =
-  let res = test_helper (Interpreter.interpret "insert 1 englewood_avenue G") in
+  let res =
+    test_helper
+      (Interpreter.interpret
+         "INSERT INTO Mbta (id stop_name rail_line) VALUES (1 'englewood' 'G') ")
+  in
   Alcotest.(check bool)
     "insert accepted for execution" true
-    (res = "ok" || String.starts_with ~prefix:"error:" res = false)
+    (String.starts_with ~prefix:"Inserted" res = true
+    || String.starts_with ~prefix:"error:" res = false)
 
 let test_select_statement_recognized () =
   let res = test_helper (Interpreter.interpret "select") in

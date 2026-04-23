@@ -10,6 +10,7 @@ type row_t = {
 type t = {
   table_id : int;
   table_name : string;
+  table_fields : string list;
   rows : row_t list;
 }
 [@@deriving show]
@@ -17,7 +18,7 @@ type t = {
 let make_row ~id ~stop_name ~rail_line : row_t = { id; stop_name; rail_line }
 
 let create_table ~(id : int) ~(table_name : string) : t =
-  { table_id = id; table_name; rows = [] }
+  { table_id = id; table_name; table_fields = []; rows = [] }
 
 (* let open_table ~(id : int) : t = *)
 
@@ -47,5 +48,6 @@ let add_row ~(table : t) ~(row : row_t) : t =
     {
       table_id = table.table_id;
       table_name = table.table_name;
+      table_fields = table.table_fields;
       rows = new_row_list;
     }

@@ -6,7 +6,7 @@
 %token EXIT HELP
 
 /* statements */
-%token INSERT SELECT 
+%token INSERT SELECT INTO VALUES
 %token <string> UNK_COM 
 
 /* Operators */
@@ -64,17 +64,20 @@ field:
   | IDENTIFIER { $1 }
   ;
 
+constant:
+  | STRING            { Constant.make_string $1 }
+  | INT               { Constant.make_int (Int32.of_int $1) }
 
-(* constant:  *)
-  (* | s = STRING        {String s} *)
-  (* | i = INT           { Int i } *)
+
+constant_list:
+  | constant { [$1] }
+  | constant constant_list {$1 :: $2}
 
 
 statement:
   | SELECT; e = expr { Statement (Select e) }
-    | INSERT constant ENTER { Statement ( Insert (Insert.make $2))}
+  | INSERT INTO IDENTIFIER LPAREN field_list RPAREN VALUES LPAREN constant_list RPAREN { Statement ( Insert (Insert.make $3 $5 $9))}
   | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
-(*   | INSERT IDENTIFIER field_list {} *)
 
 
 field_list:
@@ -82,9 +85,6 @@ field_list:
   | field field_list { $1 :: $2 }
   ;
 
-(* create: *)
-(*   | INSERT IDENTIFIER field_list {} *)
-  
 
 expr:
   | i = INT           { Int i }

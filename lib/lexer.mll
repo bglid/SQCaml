@@ -15,6 +15,8 @@
       [
       "INSERT", INSERT;
       "SELECT", SELECT;
+      "INTO", INTO;
+      "VALUES", VALUES;
     ]
 }
 
@@ -24,8 +26,8 @@ let frac = '.'digit*
 let float = digit* frac?
 let white = [' ' '\t']+
 let meta_command = ['.']['a'-'z' 'A'-'Z' '_']+
-let statement = ['A'-'Z' '_']+
-let id = ['a'-'z'  '_']['a'-'z'  '_' '0'-'9']*
+let statement = ['A'-'Z' '_']['A'-'Z' '_']+
+let id = ['A'-'Z' 'a'-'z'  '_' ]['a'-'z'  '_' '0'-'9']*
 let newline = '\r' | '\n' | "\r\n"
 
 
