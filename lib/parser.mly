@@ -17,7 +17,6 @@
 %token DIV
 %token SUBT
 %token EOF
-%token ENTER
 %token TRUE
 %token FALSE
 %token STRUCT_COMP
@@ -49,8 +48,6 @@
 %%
 
 prog: 
-  | meta ENTER { $1 }
-  | statement; ENTER { $1 }
   | meta EOF { $1 }
   | statement; EOF { $1 }
   | e = expr; EOF { Statement (Expr e ) }
