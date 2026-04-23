@@ -146,7 +146,7 @@ let test_insert_statement_recognized () =
   let res =
     test_helper
       (Interpreter.interpret
-         "INSERT INTO Mbta (Id stop_name rail_line) VALUES (1 'f' 'g') ")
+         "INSERT INTO Mbta (Id, stop_name, rail_line) VALUES (1, 'f', 'g') ")
   in
   Alcotest.(check bool)
     "insert accepted for execution" true
@@ -155,7 +155,7 @@ let test_insert_statement_recognized () =
 
 let test_select_statement_recognized () =
   let res =
-    test_helper (Interpreter.interpret "SELECT stop_name rail_line FROM Mbta")
+    test_helper (Interpreter.interpret "SELECT stop_name, rail_line FROM Mbta")
   in
   Alcotest.(check bool)
     "select accepted for execution" true

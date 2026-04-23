@@ -12,6 +12,7 @@
 /* Operators */
 %token LPAREN "("
 %token RPAREN ")"
+%token COMMA
 %token SUM
 %token MULT
 %token DIV
@@ -68,7 +69,7 @@ constant:
 
 constant_list:
   | constant { [$1] }
-  | constant constant_list {$1 :: $2}
+  | constant COMMA constant_list {$1 :: $3}
 
 
 statement:
@@ -80,7 +81,7 @@ statement:
 
 field_list:
   | field { [$1] }
-  | field field_list { $1 :: $2 }
+  | field COMMA field_list { $1 :: $3 }
   ;
 
 

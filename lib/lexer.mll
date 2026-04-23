@@ -51,6 +51,7 @@ rule read =
     | ">="    { GEQ }
     | "<"     { LT }
     | ">"     { GT }
+    | ","     { COMMA }
     | white   { read lexbuf}
     | int     { INT (int_of_string(Lexing.lexeme lexbuf))}
     | float   { FLOAT (float_of_string(Lexing.lexeme lexbuf))}
