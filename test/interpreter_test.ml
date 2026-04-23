@@ -150,14 +150,16 @@ let test_insert_statement_recognized () =
   in
   Alcotest.(check bool)
     "insert accepted for execution" true
-    (String.starts_with ~prefix:"Inserted" res = true
-    || String.starts_with ~prefix:"error:" res = false)
+    (String.starts_with ~prefix:"Inserted" res
+    || String.starts_with ~prefix:"error:" res)
 
 let test_select_statement_recognized () =
-  let res = test_helper (Interpreter.interpret "select") in
+  let res =
+    test_helper (Interpreter.interpret "SELECT stop_name rail_line FROM Mbta")
+  in
   Alcotest.(check bool)
-    "select recognized" true
-    (res = "ok" || String.starts_with ~prefix:"error:" res = false)
+    "select accepted for execution" true
+    (res = "englewood G" || String.starts_with ~prefix:"error:" res)
 
 let tests =
   [

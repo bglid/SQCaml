@@ -125,7 +125,7 @@ let execute_statement stmt : execution_t =
   match stmt with
   | Ast.Create _ -> Ok
   | Ast.Insert i -> Message (Insert.execute_insert i)
-  | Ast.Select e -> Message (e |> eval |> string_of_val)
+  | Ast.Select s -> Message (Select.execute_select s)
   | Ast.Expr e -> Message (e |> eval |> string_of_val)
   | Ast.Unk_stmt u -> Message u
 

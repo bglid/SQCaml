@@ -20,7 +20,9 @@ let make_row ~id ~stop_name ~rail_line : row_t = { id; stop_name; rail_line }
 let create_table ~(id : int) ~(table_name : string) : t =
   { table_id = id; table_name; table_fields = []; rows = [] }
 
-(* let open_table ~(id : int) : t = *)
+(* let open_table ~(table_name : string) : t = *)
+(*   match table_name with *)
+(*     |  *)
 
 let already_in_table ~(table : t) ~(row : row_t) : bool =
   (* List.mem row table.rows *)

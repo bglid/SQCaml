@@ -6,7 +6,7 @@
 %token EXIT HELP
 
 /* statements */
-%token INSERT SELECT INTO VALUES
+%token INSERT SELECT INTO VALUES FROM
 %token <string> UNK_COM 
 
 /* Operators */
@@ -72,7 +72,8 @@ constant_list:
 
 
 statement:
-  | SELECT; e = expr { Statement (Select e) }
+  (* | SELECT; e = expr { Statement (Select e) } *)
+  | SELECT field_list FROM IDENTIFIER {Statement (Select (Select.make $2 $4))}
   | INSERT INTO IDENTIFIER LPAREN field_list RPAREN VALUES LPAREN constant_list RPAREN { Statement ( Insert (Insert.make $3 $5 $9))}
   | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
 

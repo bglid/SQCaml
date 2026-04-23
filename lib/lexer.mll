@@ -17,6 +17,7 @@
       "SELECT", SELECT;
       "INTO", INTO;
       "VALUES", VALUES;
+      "FROM", FROM;
     ]
 }
 

@@ -23,7 +23,7 @@ let execute_insert (preped_insert : t) : string =
       "" preped_insert.values
   in
   (* new_fields *)
-  "Inserted" ^ new_fields ^ "into" ^ preped_insert.table.table_name
+  "Inserted" ^ new_fields ^ " into " ^ preped_insert.table.table_name
 
 (* Printf.printf "Inserted %d %s %s into Table %d" id stop_name rail_name *)
 (*   preped_insert.table.table_name *)

@@ -40,7 +40,7 @@ type create_t = {
 type statement =
   | Create of create_t
   | Insert of Insert.t
-  | Select of expr
+  | Select of Select.t
   | Expr of expr
   | Unk_stmt of string
 [@@deriving show]
