@@ -137,7 +137,7 @@ let test_meta_exit () =
   Alcotest.(check string) "exit recognized" ".exit" res
 
 let test_unknown_command () =
-  let res = test_helper (Interpreter.interpret "nonsense") in
+  let res = test_helper (Interpreter.interpret "NONSENSE") in
   Alcotest.(check bool)
     "unknown command errors" true
     (String.starts_with ~prefix:"error:" res)

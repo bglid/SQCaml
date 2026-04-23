@@ -124,7 +124,7 @@ let execute_statement stmt : execution_t =
   (* Need to improve this once the B+ is implemented *)
   match stmt with
   | Ast.Create _ -> Ok
-  | Ast.Insert _ -> Ok
+  | Ast.Insert i -> Insert.execute_insert i
   | Ast.Select e -> Message (e |> eval |> string_of_val)
   | Ast.Expr e -> Message (e |> eval |> string_of_val)
   | Ast.Unk_stmt u -> Message u

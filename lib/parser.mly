@@ -60,18 +60,22 @@ meta:
   | EXIT              { Meta_command (Exit)}
   | HELP              { Meta_command (Help)}
 
-
-statement:
-  (* | create { $1 } *)
-  (* | query { $1 } *)
-  | SELECT; e = expr { Statement (Select e) }
-  | INSERT; e = expr { Statement (Expr e) }
-  | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
-(*   | INSERT IDENTIFIER field_list {} *)
-
 field:
   | IDENTIFIER { $1 }
   ;
+
+
+(* constant:  *)
+  (* | s = STRING        {String s} *)
+  (* | i = INT           { Int i } *)
+
+
+statement:
+  | SELECT; e = expr { Statement (Select e) }
+    | INSERT constant ENTER { Statement ( Insert (Insert.make $2))}
+  | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
+(*   | INSERT IDENTIFIER field_list {} *)
+
 
 field_list:
   | field { [$1] }
