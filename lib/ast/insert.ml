@@ -18,8 +18,8 @@ let execute_insert (preped_insert : t) : string =
     List.fold_left
       (fun acc l ->
         match l with
-        | Constant.ConstStr s -> acc ^ s
-        | Constant.ConstInt d -> acc ^ Int.to_string (Int32.to_int d))
+        | Constant.ConstStr s -> acc ^ " " ^ s
+        | Constant.ConstInt d -> acc ^ " " ^ Int.to_string (Int32.to_int d))
       "" preped_insert.values
   in
   (* new_fields *)

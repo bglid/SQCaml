@@ -61,7 +61,7 @@ rule read =
     with Not_found -> UNK_COM s}
     | id as s { IDENTIFIER s }
     | newline { Lexing.new_line lexbuf; read lexbuf }
-    | '"'     { read_string (Buffer.create 16) lexbuf}
+    | "'"     { read_string (Buffer.create 16) lexbuf}
     | eof     { EOF }
     | _       { raise (Lexing_error ("bad char, error"))}
 and comment = 
@@ -70,6 +70,6 @@ and comment =
     | eof { EOF }
     | _ { comment lexbuf }
 and read_string buff = parse
-  | '"'       { STRING (Buffer.contents buff)}
+  | "'"       { STRING (Buffer.contents buff)}
   | _ as c    { Buffer.add_char buff c; read_string buff lexbuf }
   | eof       { raise (Lexing_error ("String not finished, error"))}

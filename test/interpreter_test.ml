@@ -146,7 +146,7 @@ let test_insert_statement_recognized () =
   let res =
     test_helper
       (Interpreter.interpret
-         "INSERT INTO Mbta (id stop_name rail_line) VALUES (1 'englewood' 'G') ")
+         "INSERT INTO Mbta (Id stop_name rail_line) VALUES (1 'f' 'g') ")
   in
   Alcotest.(check bool)
     "insert accepted for execution" true
