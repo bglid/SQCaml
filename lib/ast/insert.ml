@@ -34,5 +34,5 @@ let execute_insert (db : Db_session.t) (preped_insert : t) : string =
   File_manager.write db.file_manager row_block_num page;
 
   (* new_fields *)
-  let res = "Inserted" ^ new_row.stop_name ^ " " ^ new_row.rail_line ^ " " in
+  let res = "Inserted " ^ new_row.stop_name ^ " " ^ new_row.rail_line ^ " " in
   res
