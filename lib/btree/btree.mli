@@ -1,4 +1,9 @@
-type t
+type t = {
+  storage_m : Storage_manager.t; (* file used to store to disk *)
+  key : Keys.t;
+  mutable root : Nodes.t;
+  mutable root_num : int;
+}
 (** Struct for the B+ Tree *)
 
 val serialize : Nodes.t -> int -> Page.Page.t

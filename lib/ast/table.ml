@@ -12,7 +12,6 @@ type t = {
   table_name : string;
   table_fields : string list;
   rows : row_t list;
-  num_rows : int;
 }
 [@@deriving show]
 
@@ -27,13 +26,7 @@ let make_row ~id ~stop_name ~rail_line : row_t = { id; stop_name; rail_line }
 
 let create_table ~(id : int) ~(table_name : string) : t =
   let rows = [] in
-  {
-    table_id = id;
-    table_name;
-    table_fields = [];
-    rows;
-    num_rows = List.length rows;
-  }
+  { table_id = id; table_name; table_fields = []; rows }
 
 (* let open_table ~(table_name : string) : t = *)
 (*   match table_name with *)
