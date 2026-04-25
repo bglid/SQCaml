@@ -47,3 +47,31 @@ let cursor_advance (cursor : t) : unit =
   cursor.cell_num <- cursor.cell_num + 1;
   if cursor.cell_num >= node.cur_size then
     cursor.end_of_table <- true
+
+(* finally, leaf node insert*)
+let leaf_node_insert (cursor : t) (key : Keys.value) (value_pointer : int) :
+    unit =
+  let rec shift_cells (c : t) (n : Nodes.t) (i : int) =
+    if i <= c.cell_num then
+      ()
+    else begin
+      n.keys.(i) <- n.keys.(i - 1);
+      n.pointers.(i) <- n.pointers.(i - 1);
+      shift_cells c n (i - 1)
+    end
+  in
+
+  (* get the node where the cursor is pointing*)
+  let node = Btree.get_node cursor.tree cursor.page_num in
+  let num_cells = node.cur_size in
+  if num_cells >= node.capacity then
+    failwith "Help! please implement splitting!!!!";
+
+  if cursor.cell_num < num_cells then
+    shift_cells cursor node num_cells;
+
+  node.cur_size <- node.cur_size + 1;
+  node.keys.(cursor.cell_num) <- key;
+  node.pointers.(cursor.cell_num) <- value_pointer;
+
+  Btree.write_node cursor.tree node cursor.page_num

@@ -1,7 +1,7 @@
 (* abstraction to make a module for preparing and executing insert statement*)
 
 type t = {
-  (* table : Table.t; *)
+  (* tree : Btree.t; *)
   fields : string list;
   values : Constant.t list;
 }
@@ -23,16 +23,27 @@ let execute_insert (db : Db_session.t) (preped_insert : t) : string =
           ~stop_name:(Constant.to_str stop) ~rail_line:(Constant.to_str rail)
     | _ -> failwith "Wrong amount of args passed"
   in
-  let page =
-    Table.serialize_to_page new_row
-      ~block_size:(File_manager.get_blocksize db.file_manager)
-  in
-  (* write the page *)
-  let row_block_num =
-    Storage_manager.append ~storage_m:db.storage_manager ~page
-  in
-  File_manager.write db.file_manager row_block_num page;
+  let cursor = Cursor.tree_end db.index in
 
-  (* new_fields *)
-  let res = "Inserted " ^ new_row.stop_name ^ " " ^ new_row.rail_line ^ " " in
-  res
+  (* check to guard capacity*)
+  let leaf = Btree.get_node db.index cursor.page_num in
+  if leaf.cur_size >= leaf.capacity then
+    failwith "HELP! please implement splitting plz."
+  else
+    (* serialize the page and write to a block! *)
+    let page =
+      Table.serialize_to_page new_row
+        ~block_size:(File_manager.get_blocksize db.file_manager)
+    in
+    let row_block =
+      Storage_manager.append ~storage_m:db.storage_manager ~page
+    in
+    (* block num where we want to write to disk!!*)
+    let row_block_num = Page.Block.block_num row_block in
+    let key = Keys.Integer (Int32.of_int new_row.id) in
+    (* getting and writing our tree node to disk FINALLY*)
+    Cursor.leaf_node_insert cursor key row_block_num;
+
+    (* printing the res *)
+    let res = "Inserted " ^ new_row.stop_name ^ " " ^ new_row.rail_line ^ " " in
+    res
