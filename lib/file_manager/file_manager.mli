@@ -27,3 +27,5 @@ val size : t -> string -> int
 
 val append : t -> string -> Page.Block.t
 (** Append a block in a file and return the block id *)
+
+val close : t -> unit

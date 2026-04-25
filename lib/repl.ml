@@ -28,25 +28,25 @@ let strip_double_semicolon s =
 (* The parser doesn't know what to do with ';'
    To keep it easier I just strip it before handing it to the lexer-parser*)
 
-let rec repl_loop () =
+let rec repl_loop (db : Db_session.t) =
   printf "\nSQCaml > %!";
   let input = strip_double_semicolon (read_query "") in
   let interpreted_input = Interpreter.interpret input in
   match interpreted_input with
-  | Interpreter.Ok -> repl_loop ()
+  | Interpreter.Ok -> repl_loop db
   | Interpreter.Quit ->
       printf "exiting SQCaml...\n";
       ()
   | Interpreter.Help l ->
       List.iter (printf "%s") l;
-      repl_loop ()
+      repl_loop db
   | Interpreter.Message m ->
       printf "%s" m;
       printf "\n";
-      repl_loop ()
+      repl_loop db
   | Interpreter.Error err ->
       printf "%s" err;
       printf "\n";
-      repl_loop ()
+      repl_loop db
 
-let start () = repl_loop ()
+let start (db : Db_session.t) = repl_loop db

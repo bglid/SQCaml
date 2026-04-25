@@ -164,10 +164,12 @@ let open_btree (storage_m : Storage_manager.t) (key_type : Keys.t) : t =
   let block_size = File_manager.get_blocksize storage_m.file_manager in
   let meta = Storage_manager.get_head_page ~storage_manager:storage_m in
   let root_num = Int32.to_int (Page.Page.get_int32 meta 4) in
-  if root_num <> 0 then
-    failwith "B+ Tree not initialized";
-  let root_page = Storage_manager.get_block ~storage_m ~block_num:root_num in
-  let root_node = deserialize root_page key_type block_size in
-  { storage_m; key = key_type; root = root_node; root_num }
+  if root_num = 0 then
+    (* create btree instead *)
+    create storage_m key_type
+  else
+    let root_page = Storage_manager.get_block ~storage_m ~block_num:root_num in
+    let root_node = deserialize root_page key_type block_size in
+    { storage_m; key = key_type; root = root_node; root_num }
 
 [@@@warning "-32"]

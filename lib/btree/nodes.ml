@@ -36,4 +36,4 @@ let int32_to_node_t (i32 : Int32.t) : node_type =
   else if i32 = internal_serial then
     Internal
   else
-    failwith "WRONG i32!"
+    failwith (Printf.sprintf "WRONG i32: %ld" i32)
