@@ -31,7 +31,7 @@ let strip_double_semicolon s =
 let rec repl_loop (db : Db_session.t) =
   printf "\nSQCaml > %!";
   let input = strip_double_semicolon (read_query "") in
-  let interpreted_input = Interpreter.interpret input in
+  let interpreted_input = Interpreter.interpret db input in
   match interpreted_input with
   | Interpreter.Ok -> repl_loop db
   | Interpreter.Quit ->

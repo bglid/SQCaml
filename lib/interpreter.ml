@@ -125,7 +125,8 @@ let execute_statement (db : Db_session.t) (stmt : Ast.statement) : execution_t =
   match stmt with
   | Ast.Create _ -> Ok
   | Ast.Insert i -> Message (Insert.execute_insert db i)
-  | Ast.Select s -> Message (Select.execute_select db s)
+  | Ast.Select _ -> Ok
+  (* | Ast.Select s -> Message (Select.execute_select db s) *)
   | Ast.Expr e -> Message (e |> eval |> string_of_val)
   | Ast.Unk_stmt u -> Message u
 
