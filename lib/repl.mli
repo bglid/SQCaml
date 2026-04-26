@@ -8,5 +8,5 @@
 (** Checks for meta command and returns Unrecognized command if not recognized
 *)
 
-val start : unit -> unit
+val start : Db_session.t -> unit
 (** Start the interactive SQCaml REPL *)

@@ -3,7 +3,7 @@
   %}
 
 /* Meta commands */
-%token EXIT HELP
+%token EXIT HELP PRINT_TREE
 
 /* statements */
 %token INSERT SELECT INTO VALUES FROM
@@ -57,6 +57,7 @@ prog:
 meta:
   | EXIT              { Meta_command (Exit)}
   | HELP              { Meta_command (Help)}
+  | PRINT_TREE        { Meta_command (Tree)}
 
 field:
   | IDENTIFIER { $1 }
@@ -75,7 +76,7 @@ constant_list:
 statement:
   (* | SELECT; e = expr { Statement (Select e) } *)
   | SELECT field_list FROM IDENTIFIER {Statement (Select (Select.make $2 $4))}
-  | INSERT INTO IDENTIFIER LPAREN field_list RPAREN VALUES LPAREN constant_list RPAREN { Statement ( Insert (Insert.make $3 $5 $9))}
+  | INSERT INTO IDENTIFIER LPAREN field_list RPAREN VALUES LPAREN constant_list RPAREN { Statement ( Insert (Insert.make $5 $9))}
   | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
 
 

@@ -9,6 +9,7 @@ let help_list =
   [
     ".help \t *Prints help info for repl commands*\n";
     ".exit \t *Exits SQCaml*\n";
+    ".tree \t *Prints current Keys from B+ tree*\n";
   ]
 
 (** [parse s] parses [s] into a top level statment/mcommand. *)
@@ -114,25 +115,27 @@ let rec eval (e : Ast.expr) : Ast.expr =
   else
     eval (step e)
 
-let execute_meta (md : Ast.meta_command) : execution_t =
+let execute_meta (db : Db_session.t) (md : Ast.meta_command) : execution_t =
   match md with
   | Ast.Exit -> Quit
   | Ast.Help -> Help help_list
+  | Ast.Tree -> Message (Btree.print_tree db.index)
   | Ast.Unk_mcmd _ -> Error "unk meta command: Failure"
 
-let execute_statement stmt : execution_t =
+let execute_statement (db : Db_session.t) (stmt : Ast.statement) : execution_t =
   (* Need to improve this once the B+ is implemented *)
   match stmt with
   | Ast.Create _ -> Ok
-  | Ast.Insert i -> Message (Insert.execute_insert i)
-  | Ast.Select s -> Message (Select.execute_select s)
+  | Ast.Insert i -> Message (Insert.execute_insert db i)
+  | Ast.Select _ -> Ok
+  (* | Ast.Select s -> Message (Select.execute_select db s) *)
   | Ast.Expr e -> Message (e |> eval |> string_of_val)
   | Ast.Unk_stmt u -> Message u
 
 (** [interpret input] interprets [input] by lexing + parsing it into a toplevel,
     evaluating it, and converting it to a string*)
-let interpret (s : string) =
+let interpret (db : Db_session.t) (s : string) =
   let parsed_input = s |> parse in
   match parsed_input with
-  | Ast.Meta_command md -> execute_meta md
-  | Ast.Statement stmt -> execute_statement stmt
+  | Ast.Meta_command md -> execute_meta db md
+  | Ast.Statement stmt -> execute_statement db stmt

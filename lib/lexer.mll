@@ -7,6 +7,7 @@
       [
       ".exit", EXIT;
       ".help", HELP;
+      ".tree", PRINT_TREE;
     ]
 
   let stmts = Hashtbl.create 20

@@ -120,3 +120,60 @@ let get_node (btree : t) (p : int) : Nodes.t =
     Storage_manager.get_block ~storage_m:btree.storage_m ~block_num:p
   in
   deserialize page btree.key block_size
+
+[@@@warning "-32"]
+
+let empty_node (btree : t) : Nodes.t =
+  let block_size = File_manager.get_blocksize btree.storage_m.file_manager in
+  let key_type = btree.key in
+  let capacity = get_num_keys block_size key_type in
+  {
+    Nodes.node_t = Leaf;
+    Nodes.parent = 0;
+    Nodes.cur_size = 0;
+    Nodes.keys = Array.init capacity (fun _ -> Keys.empty_key key_type);
+    Nodes.pointers = Array.init (capacity + 1) (fun _ -> unused_pointer_serial);
+    Nodes.capacity;
+    Nodes.key_type;
+  }
+
+(* Make an empty btree initialized to disk *)
+let create (storage_m : Storage_manager.t) (key_type : Keys.t) : t =
+  let block_size = File_manager.get_blocksize storage_m.file_manager in
+  let meta = Storage_manager.get_head_page ~storage_manager:storage_m in
+  Page.Page.set_int32 meta 4 (Int32.of_int 1);
+  Storage_manager.update_block_num ~storage_m ~block_num:0 ~page:meta;
+  let capacity = get_num_keys block_size key_type in
+  let root_node =
+    {
+      Nodes.node_t = Leaf;
+      Nodes.parent = 0;
+      Nodes.cur_size = 0;
+      Nodes.keys = Array.init capacity (fun _ -> Keys.empty_key key_type);
+      Nodes.pointers =
+        Array.init (capacity + 1) (fun _ -> unused_pointer_serial);
+      Nodes.capacity;
+      Nodes.key_type;
+    }
+  in
+  let root_page = serialize root_node block_size in
+  let _ = Storage_manager.append ~storage_m ~page:root_page in
+  { storage_m; key = key_type; root = root_node; root_num = 1 }
+
+let open_btree (storage_m : Storage_manager.t) (key_type : Keys.t) : t =
+  let block_size = File_manager.get_blocksize storage_m.file_manager in
+  let meta = Storage_manager.get_head_page ~storage_manager:storage_m in
+  let root_num = Int32.to_int (Page.Page.get_int32 meta 4) in
+  if root_num = 0 then
+    (* create btree instead *)
+    create storage_m key_type
+  else
+    let root_page = Storage_manager.get_block ~storage_m ~block_num:root_num in
+    let root_node = deserialize root_page key_type block_size in
+    { storage_m; key = key_type; root = root_node; root_num }
+
+[@@@warning "-32"]
+
+let print_tree (tree : t) : string =
+  let root_node = get_node tree tree.root_num in
+  Nodes.print_leaf_node root_node

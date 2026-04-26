@@ -1,4 +1,9 @@
-type t
+type t = {
+  storage_m : Storage_manager.t; (* file used to store to disk *)
+  key : Keys.t;
+  mutable root : Nodes.t;
+  mutable root_num : int;
+}
 (** Struct for the B+ Tree *)
 
 val serialize : Nodes.t -> int -> Page.Page.t
@@ -22,3 +27,9 @@ val write_node_append : t -> Nodes.t -> int
 val get_node : t -> int -> Nodes.t
 (** Get a block from the btree [t] and deserializeit using the pointer [p] into
     a btree node *)
+
+val open_btree : Storage_manager.t -> Keys.t -> t
+(** Opens btree given [storage manager] and [key type]. If it doesn't exist,
+    creates a new btree *)
+
+val print_tree : t -> string

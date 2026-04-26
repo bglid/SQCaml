@@ -1,6 +1,6 @@
 type t = {
   is_new : bool;
-  (* db_dir : Unix.dir_handle; *)
+  db_dir : Unix.dir_handle;
   db_dirname : string;
   block_size : int;
   open_files : (string, Unix.file_descr) Hashtbl.t;
@@ -40,7 +40,7 @@ let make ~db_dirname ~block_size : t =
   clean_temp_dir db_dirname db_dir;
   Unix.rewinddir db_dir;
   let open_files = Hashtbl.create 10 in
-  { is_new; db_dirname; block_size; open_files }
+  { is_new; db_dir; db_dirname; block_size; open_files }
 
 let is_new (file_mger : t) : bool = file_mger.is_new
 let get_blocksize (file_mger : t) : int = file_mger.block_size
@@ -98,3 +98,12 @@ let append (file_mger : t) (filename : string) : Page.Block.t =
   let _ = Unix.lseek file_desc (block_num * file_mger.block_size) SEEK_SET in
   write_n file_desc b 0 file_mger.block_size;
   block
+
+let close (file_mger : t) : unit =
+  Hashtbl.iter
+    (fun _ files ->
+      (try Unix.fsync files with _ -> ());
+      Unix.close files)
+    file_mger.open_files;
+  Hashtbl.clear file_mger.open_files;
+  Unix.closedir file_mger.db_dir
