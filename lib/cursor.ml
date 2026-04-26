@@ -19,11 +19,11 @@ let tree_start (tree : Btree.t) : t =
 
   { tree; page_num = tree.root_num; cell_num = 0; end_of_table = eot }
 
-let tree_end (tree : Btree.t) : t =
-  let root_node = Btree.get_node tree tree.root_num in
-  let num_cells = root_node.cur_size in
-  let cell_num = num_cells in
-  { tree; page_num = tree.root_num; cell_num; end_of_table = true }
+(* let tree_end (tree : Btree.t) : t = *)
+(*   let root_node = Btree.get_node tree tree.root_num in *)
+(*   let num_cells = root_node.cur_size in *)
+(*   let cell_num = num_cells in *)
+(*   { tree; page_num = tree.root_num; cell_num; end_of_table = true } *)
 
 (* get the val at a leaf node *)
 let cursor_value (cursor : t) : int =
@@ -69,3 +69,41 @@ let leaf_node_insert (cursor : t) (key : Keys.value) (value_pointer : int) :
   node.pointers.(cursor.cell_num) <- value_pointer;
 
   Btree.write_node cursor.tree node cursor.page_num
+
+(*basically just does b-search and returns cursor with some guards *)
+let leaf_node_find (tree : Btree.t) (page_num : int) (key : Keys.value) : t =
+  (* binary search for id idx *)
+  let rec binary_search (n : Nodes.t) (min_i : int) (max_i : int) : int =
+    if min_i = max_i then
+      min_i
+    else
+      let idx = (min_i + max_i) / 2 in
+      let key_idx = n.keys.(idx) in
+      if Keys.equals key key_idx then
+        idx
+      else if Keys.less_than key key_idx then
+        let max_i = idx in
+        binary_search n min_i max_i
+      else
+        let min_i = idx + 1 in
+        binary_search n min_i max_i
+  in
+
+  let node = Btree.get_node tree page_num in
+
+  match node.node_t with
+  | Nodes.Internal -> failwith "Can't leaf search on an internal node"
+  | Nodes.Leaf -> begin
+      let min_index = 0 in
+      let one_past_max_idx = node.cur_size in
+
+      let cell_num = binary_search node min_index one_past_max_idx in
+      { tree; page_num; cell_num; end_of_table = cell_num = node.cur_size }
+    end
+
+(* returns the position of the cursor at said key*)
+let tree_find (tree : Btree.t) (key : Keys.value) : t =
+  let root_node = Btree.get_node tree tree.root_num in
+  match root_node.node_t with
+  | Nodes.Leaf -> leaf_node_find tree tree.root_num key
+  | Nodes.Internal -> failwith "Not implemented yet"

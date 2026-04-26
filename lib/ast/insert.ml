@@ -23,11 +23,19 @@ let execute_insert (db : Db_session.t) (preped_insert : t) : string =
           ~stop_name:(Constant.to_str stop) ~rail_line:(Constant.to_str rail)
     | _ -> failwith "Wrong amount of args passed"
   in
-  let cursor = Cursor.tree_end db.index in
 
-  (* check to guard capacity*)
+  (* getting cursor based on row id*)
+  let key_to_insert = Keys.Integer (Int32.of_int new_row.id) in
+  let cursor = Cursor.tree_find db.index key_to_insert in
   let leaf = Btree.get_node db.index cursor.page_num in
-  if leaf.cur_size >= leaf.capacity then
+
+  if
+    cursor.cell_num < leaf.cur_size
+    && Keys.equals leaf.keys.(cursor.cell_num) key_to_insert
+  then
+    "duplicate key"
+    (* getting the curr capacity to guard against*)
+  else if leaf.cur_size >= leaf.capacity then
     failwith "HELP! please implement splitting plz."
   else
     (* serialize the page and write to a block! *)
