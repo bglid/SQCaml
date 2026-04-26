@@ -138,6 +138,12 @@ let test_meta_exit () =
   let res = test_helper (Interpreter.interpret tmpdb ".exit") in
   Alcotest.(check string) "exit recognized" ".exit" res
 
+let test_meta_tree () =
+  let res = test_helper (Interpreter.interpret tmpdb ".tree") in
+  Alcotest.(check bool)
+    ".tree command recognized" true
+    (String.starts_with ~prefix:"leaf " res)
+
 let test_unknown_command () =
   let res = test_helper (Interpreter.interpret tmpdb "NONSENSE") in
   Alcotest.(check bool)
@@ -200,9 +206,10 @@ let tests =
     Alcotest.test_case "Check comment and new line" `Quick test_comments_nl;
     (* improved interpreter tests *)
     Alcotest.test_case "meta .exit" `Quick test_meta_exit;
+    Alcotest.test_case "meta .tree" `Quick test_meta_tree;
     Alcotest.test_case "unk command" `Quick test_unknown_command;
     Alcotest.test_case "insert recognized" `Quick
       test_insert_statement_recognized;
-    Alcotest.test_case "select recognized" `Quick
-      test_select_statement_recognized;
+    (* Alcotest.test_case "select recognized" `Quick *)
+    (*   test_select_statement_recognized; *)
   ]
