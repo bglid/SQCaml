@@ -4,10 +4,11 @@ type t = {
   mutable index : Btree.t;
 }
 
-let block_size = 4096
+(* let block_size = 4096 *)
+(* let block_size = 128 *)
 let storage_file = "sqcaml.db"
 
-let open_db (db_dir : string) : t =
+let open_db ?(block_size = 256) (db_dir : string) : t =
   (* make filemanager *)
   let fm = File_manager.make ~db_dirname:db_dir ~block_size in
 
