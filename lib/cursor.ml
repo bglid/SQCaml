@@ -12,12 +12,6 @@ type t = {
 let make ?(end_of_table = false) (tree : Btree.t) : t =
   { tree; page_num = tree.root_num; cell_num = 0; end_of_table }
 
-(* let table_end (table : Table.t) : t = *)
-(*   let new_cursor = *)
-(*     make ?row_num:(Some table.num_rows) ?end_of_table:(Some true) table *)
-(*   in *)
-(*   new_cursor *)
-
 let tree_start (tree : Btree.t) : t =
   let root_node = Btree.get_node tree tree.root_num in
   let num_cells = root_node.cur_size in

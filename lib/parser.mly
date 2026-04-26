@@ -3,7 +3,7 @@
   %}
 
 /* Meta commands */
-%token EXIT HELP
+%token EXIT HELP PRINT_TREE
 
 /* statements */
 %token INSERT SELECT INTO VALUES FROM
@@ -57,6 +57,7 @@ prog:
 meta:
   | EXIT              { Meta_command (Exit)}
   | HELP              { Meta_command (Help)}
+  | PRINT_TREE        { Meta_command (Tree)}
 
 field:
   | IDENTIFIER { $1 }

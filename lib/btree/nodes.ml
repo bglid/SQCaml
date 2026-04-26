@@ -37,3 +37,15 @@ let int32_to_node_t (i32 : Int32.t) : node_type =
     Internal
   else
     failwith (Printf.sprintf "WRONG i32: %ld" i32)
+
+let print_leaf_node (n : t) : string =
+  if n.node_t <> Leaf then
+    "Not a leaf node"
+  else
+    let lines =
+      List.init n.cur_size (fun i ->
+          match n.keys.(i) with
+          | Keys.Integer n -> Printf.sprintf "- %d\n" (Int32.to_int n)
+          | Keys.Varchar v -> Printf.sprintf "- %s\n" v)
+    in
+    Printf.sprintf "leaf (size %d)\n%s" n.cur_size (String.concat "" lines)

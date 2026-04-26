@@ -12,13 +12,6 @@ type binop_t =
   | Comp
 [@@deriving show]
 
-(* type column_types = *)
-(*   | Int_col *)
-(*   | Float_col *)
-(*   | String_col *)
-(*   | Bool_col *)
-(* [@@deriving show] *)
-
 (** Our Abstract Syntax Tree for interpreter, hooray! *)
 type expr =
   | Int of int
@@ -48,10 +41,9 @@ type statement =
 type meta_command =
   | Help
   | Exit
+  | Tree
   | Unk_mcmd of string
-[@@deriving show]
 
 type top_level =
   | Statement of statement
   | Meta_command of meta_command
-[@@deriving show]

@@ -173,3 +173,7 @@ let open_btree (storage_m : Storage_manager.t) (key_type : Keys.t) : t =
     { storage_m; key = key_type; root = root_node; root_num }
 
 [@@@warning "-32"]
+
+let print_tree (tree : t) : string =
+  let root_node = get_node tree tree.root_num in
+  Nodes.print_leaf_node root_node
