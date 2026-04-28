@@ -121,6 +121,13 @@ let get_node (btree : t) (p : int) : Nodes.t =
   in
   deserialize page btree.key block_size
 
+(* getting the key value at the max of the node*)
+let get_node_max_key (node : Nodes.t) : Keys.value =
+  if node.cur_size = 0 then
+    failwith "Empty node!!!!!! Please pass in an initialized node"
+  else
+    node.keys.(node.cur_size - 1)
+
 [@@@warning "-32"]
 
 let empty_node (btree : t) : Nodes.t =
@@ -177,3 +184,16 @@ let open_btree (storage_m : Storage_manager.t) (key_type : Keys.t) : t =
 let print_tree (tree : t) : string =
   let root_node = get_node tree tree.root_num in
   Nodes.print_leaf_node root_node
+
+let create_new_root (tree : t) ~(left_child_page_num : int)
+    ~(left_child : Nodes.t) ~(right_child_page_num : int) : unit =
+  (*create new root*)
+  let root = empty_node tree in
+  root.node_t <- Nodes.Internal;
+  root.parent <- 0;
+  root.cur_size <- 1;
+  (* update nodes as children*)
+  root.pointers.(0) <- left_child_page_num;
+  root.keys.(0) <- get_node_max_key left_child;
+  root.pointers.(1) <- right_child_page_num;
+  write_node tree root tree.root_num

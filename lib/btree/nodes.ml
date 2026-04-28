@@ -49,3 +49,20 @@ let print_leaf_node (n : t) : string =
           | Keys.Varchar v -> Printf.sprintf "- %s\n" v)
     in
     Printf.sprintf "leaf (size %d)\n%s" n.cur_size (String.concat "" lines)
+
+let internal_node_child_pointer (node : t) (child_num : int) : int =
+  match node.node_t with
+  | Leaf -> failwith "This is a leafnode!"
+  | Internal ->
+      let num_keys = node.cur_size in
+      if child_num > num_keys then
+        failwith "Tried to access child num that's greater than num of keys!"
+      else if child_num = num_keys then
+        node.pointers.(num_keys)
+      else
+        node.pointers.(child_num)
+
+let internal_node_key (node : t) (key_num : int) : Keys.value =
+  match node.node_t with
+  | Leaf -> failwith "This is a leafnode!"
+  | Internal -> node.keys.(key_num)
