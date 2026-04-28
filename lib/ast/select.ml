@@ -27,7 +27,8 @@ let execute_select (db : Db_session.t) (_ : t) : string =
       let row = Table.deserialize_from_page page in
       Cursor.cursor_advance c;
       let str_row =
-        Int.to_string row.id ^ " " ^ row.stop_name ^ " " ^ row.rail_line ^ "\n"
+        Int.to_string row.id ^ ", " ^ row.stop_name ^ ", " ^ row.rail_line
+        ^ "\n"
       in
       cursor_select c (str_row :: acc)
   in

@@ -24,8 +24,16 @@ let cursor_value (cursor : t) : int =
 let cursor_advance (cursor : t) : unit =
   let node = Btree.get_node cursor.tree cursor.page_num in
   cursor.cell_num <- cursor.cell_num + 1;
-  if cursor.cell_num >= node.cur_size then
-    cursor.end_of_table <- true
+  if cursor.cell_num >= node.cur_size then begin
+    (* nah let's now go to the next leaf node *)
+    (* let next_page_num = node.pointers.(cursor.cell_num) in *)
+    let next_page_num = node.pointers.(node.capacity) in
+    if next_page_num = Btree.unused_pointer_serial then
+      cursor.end_of_table <- true
+    else
+      cursor.page_num <- next_page_num;
+    cursor.cell_num <- 0
+  end
 
 (*basically just does b-search and returns cursor with some guards *)
 let leaf_node_find (tree : Btree.t) (page_num : int) (key : Keys.value) : t =

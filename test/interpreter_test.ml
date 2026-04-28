@@ -164,11 +164,11 @@ let test_insert_statement_recognized () =
 let test_select_statement_recognized () =
   let res =
     test_helper
-      (Interpreter.interpret tmpdb "SELECT stop_name, rail_line FROM Mbta")
+      (Interpreter.interpret tmpdb "SELECT (stop_name, rail_line) FROM Mbta")
   in
   Alcotest.(check bool)
     "select accepted for execution" true
-    (res = "englewood G" || String.starts_with ~prefix:"error:" res)
+    (String.starts_with ~prefix:"1" res)
 
 let tests =
   [
@@ -210,6 +210,6 @@ let tests =
     Alcotest.test_case "unk command" `Quick test_unknown_command;
     Alcotest.test_case "insert recognized" `Quick
       test_insert_statement_recognized;
-    (* Alcotest.test_case "select recognized" `Quick *)
-    (*   test_select_statement_recognized; *)
+    Alcotest.test_case "select recognized" `Quick
+      test_select_statement_recognized;
   ]
