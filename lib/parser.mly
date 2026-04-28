@@ -6,7 +6,7 @@
 %token EXIT HELP PRINT_TREE
 
 /* statements */
-%token INSERT SELECT INTO VALUES FROM
+%token INSERT SELECT INTO VALUES FROM WHERE
 %token <string> UNK_COM 
 
 /* Operators */
@@ -72,10 +72,14 @@ constant_list:
   | constant { [$1] }
   | constant COMMA constant_list {$1 :: $3}
 
+predicate:
+  | field STRUCT_COMP expr {}
+
 
 statement:
   (* | SELECT; e = expr { Statement (Select e) } *)
-  | SELECT LPAREN field_list RPAREN FROM IDENTIFIER {Statement (Select (Select.make $3))}
+  (* | SELECT LPAREN field_list RPAREN FROM IDENTIFIER WHERE predicate {Statement (Select (Select.make $3 (Some $8) ))} *)
+  | SELECT LPAREN field_list RPAREN FROM IDENTIFIER {Statement (Select (Select.make $3  ))}
   | INSERT INTO IDENTIFIER LPAREN field_list RPAREN VALUES LPAREN constant_list RPAREN { Statement ( Insert (Insert.make $5 $9))}
   | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
 
