@@ -178,24 +178,6 @@ let test_internal_find_after_split () =
     end
 
 let test_scan_mlevel_btree () =
-  let collect_keys_with_cursor (tree : Btree.t) : int list =
-    let cursor = Cursor.tree_start tree in
-
-    let rec collect acc =
-      if cursor.end_of_table then
-        List.rev acc
-      else
-        let node = Btree.get_node tree cursor.page_num in
-        let key =
-          match node.keys.(cursor.cell_num) with
-          | Keys.Integer n -> Int32.to_int n
-          | Keys.Varchar _ -> failwith "Only handles int keys atm"
-        in
-        Cursor.cursor_advance cursor;
-        collect (key :: acc)
-    in
-    collect []
-  in
   let db_dir = "tmp_split_test.db" in
   if Sys.file_exists db_dir then
     Sys.command ("rm -rf " ^ db_dir) |> ignore;
@@ -228,7 +210,7 @@ let test_scan_mlevel_btree () =
         "right child points to parent" db.index.root_num right_child.parent;
 
       (*check multi-level scan by building a list of keys from leafs*)
-      let keys = collect_keys_with_cursor db.index in
+      let keys = Cursor.collect_keys db.index in
       Alcotest.(check (list int))
         "Check multi-level btree scan works"
         (List.init 35 (fun i -> i + 1))
