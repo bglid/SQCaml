@@ -67,8 +67,9 @@ let leaf_node_find (tree : Btree.t) (page_num : int) (key : Keys.value) : t =
     end
 
 (* Very similar to leaf node find function*)
-let internal_node_find (tree : Btree.t) (page_num : int) (key : Keys.value) : t
-    =
+(* Except, this should return a cursor to the leaf of this key*)
+let rec internal_node_find (tree : Btree.t) (page_num : int) (key : Keys.value)
+    : t =
   let rec binary_search (n : Nodes.t) (min_i : int) (max_i : int) : int =
     if min_i = max_i then
       min_i
@@ -88,13 +89,19 @@ let internal_node_find (tree : Btree.t) (page_num : int) (key : Keys.value) : t
   let node = Btree.get_node tree page_num in
 
   match node.node_t with
-  | Nodes.Leaf -> failwith "Cannot do internal_node_find on a Leaf node"
+  | Nodes.Leaf -> leaf_node_find tree page_num key
   | Nodes.Internal -> begin
       let min_index = 0 in
       let one_past_max_idx = node.cur_size in
 
-      let cell_num = binary_search node min_index one_past_max_idx in
-      { tree; page_num; cell_num; end_of_table = cell_num = node.cur_size }
+      (* damn did I screw that up*)
+      let child_idx = binary_search node min_index one_past_max_idx in
+      let child_page_num = node.pointers.(child_idx) in
+      let child_node = Btree.get_node tree child_page_num in
+
+      match child_node.node_t with
+      | Nodes.Leaf -> leaf_node_find tree child_page_num key
+      | Nodes.Internal -> internal_node_find tree child_page_num key
     end
 
 (* returns the position of the cursor at said key*)
@@ -206,18 +213,23 @@ let leaf_node_insert (cursor : t) (key : Keys.value) (value_pointer : int) :
 
   (* get the node where the cursor is pointing*)
   let node = Btree.get_node cursor.tree cursor.page_num in
-  let num_cells = node.cur_size in
-  (* if we hit the max and need to split a node*)
-  if num_cells >= node.capacity then
-    leaf_node_split_and_insert cursor key value_pointer
-    (* else a regular split *)
-  else begin
-    if cursor.cell_num < num_cells then
-      shift_cells cursor node num_cells;
+  match node.node_t with
+  | Nodes.Internal ->
+      failwith "TRYING TO INSERT leaf_node_insert ON AN INTERNAL NODE"
+  | Nodes.Leaf -> begin
+      let num_cells = node.cur_size in
+      (* if we hit the max and need to split a node*)
+      if num_cells >= node.capacity then
+        leaf_node_split_and_insert cursor key value_pointer
+        (* else a regular split *)
+      else begin
+        if cursor.cell_num < num_cells then
+          shift_cells cursor node num_cells;
 
-    node.cur_size <- node.cur_size + 1;
-    node.keys.(cursor.cell_num) <- key;
-    node.pointers.(cursor.cell_num) <- value_pointer;
+        node.cur_size <- node.cur_size + 1;
+        node.keys.(cursor.cell_num) <- key;
+        node.pointers.(cursor.cell_num) <- value_pointer;
 
-    Btree.write_node cursor.tree node cursor.page_num
-  end
+        Btree.write_node cursor.tree node cursor.page_num
+      end
+    end

@@ -34,7 +34,6 @@ let execute_insert (db : Db_session.t) (preped_insert : t) : string =
     && Keys.equals leaf.keys.(cursor.cell_num) key_to_insert
   then
     "duplicate key"
-    (* split the node!*)
   else
     (* serialize the page and write to a block! *)
     let page =

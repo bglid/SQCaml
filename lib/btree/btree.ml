@@ -182,8 +182,33 @@ let open_btree (storage_m : Storage_manager.t) (key_type : Keys.t) : t =
 [@@@warning "-32"]
 
 let print_tree (tree : t) : string =
-  let root_node = get_node tree tree.root_num in
-  Nodes.print_leaf_node root_node
+  let rec print_node (page_num : int) (indent : int) : string =
+    let node = get_node tree page_num in
+    let prefix = String.make indent ' ' in
+
+    match node.node_t with
+    | Nodes.Leaf -> prefix ^ Nodes.print_leaf_node node
+    | Nodes.Internal ->
+        let header = prefix ^ Nodes.print_internal_node node in
+        let keys =
+          String.concat ""
+            (List.init node.cur_size (fun i ->
+                 match node.keys.(i) with
+                 | Keys.Integer n ->
+                     prefix ^ Printf.sprintf "- %d\n" (Int32.to_int n)
+                 | Keys.Varchar v -> prefix ^ Printf.sprintf "- %s\n" v))
+        in
+        let children =
+          String.concat ""
+            (List.init (node.cur_size + 1) (fun i ->
+                 let child_page_num = node.pointers.(i) in
+                 prefix
+                 ^ Printf.sprintf " child %d -> page %d\n" i child_page_num
+                 ^ print_node child_page_num (indent + 4)))
+        in
+        header ^ keys ^ children
+  in
+  print_node tree.root_num 0
 
 let create_new_root (tree : t) ~(left_child_page_num : int)
     ~(left_child : Nodes.t) ~(right_child_page_num : int) : unit =

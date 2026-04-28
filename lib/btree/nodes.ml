@@ -50,6 +50,12 @@ let print_leaf_node (n : t) : string =
     in
     Printf.sprintf "leaf (size %d)\n%s" n.cur_size (String.concat "" lines)
 
+let print_internal_node (n : t) : string =
+  if n.node_t <> Internal then
+    "Not an internal node"
+  else
+    Printf.sprintf "Internal (size %d)\n" n.cur_size
+
 let internal_node_child_pointer (node : t) (child_num : int) : int =
   match node.node_t with
   | Leaf -> failwith "This is a leafnode!"
