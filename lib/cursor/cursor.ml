@@ -11,13 +11,6 @@ type t = {
 let make ?(end_of_table = false) (tree : Btree.t) : t =
   { tree; page_num = tree.root_num; cell_num = 0; end_of_table }
 
-let tree_start (tree : Btree.t) : t =
-  let root_node = Btree.get_node tree tree.root_num in
-  let num_cells = root_node.cur_size in
-  let eot = num_cells = 0 in
-
-  { tree; page_num = tree.root_num; cell_num = 0; end_of_table = eot }
-
 (* get the val at a leaf node *)
 let cursor_value (cursor : t) : int =
   let node = Btree.get_node cursor.tree cursor.page_num in
@@ -26,14 +19,21 @@ let cursor_value (cursor : t) : int =
   | Nodes.Leaf ->
       if cursor.cell_num >= node.cur_size then
         failwith "Cursor err: Cell number is oob";
-
       node.pointers.(cursor.cell_num)
 
 let cursor_advance (cursor : t) : unit =
   let node = Btree.get_node cursor.tree cursor.page_num in
   cursor.cell_num <- cursor.cell_num + 1;
-  if cursor.cell_num >= node.cur_size then
-    cursor.end_of_table <- true
+  if cursor.cell_num >= node.cur_size then begin
+    (* nah let's now go to the next leaf node *)
+    (* let next_page_num = node.pointers.(cursor.cell_num) in *)
+    let next_page_num = node.pointers.(node.capacity) in
+    if next_page_num = Btree.unused_pointer_serial then
+      cursor.end_of_table <- true
+    else
+      cursor.page_num <- next_page_num;
+    cursor.cell_num <- 0
+  end
 
 (*basically just does b-search and returns cursor with some guards *)
 let leaf_node_find (tree : Btree.t) (page_num : int) (key : Keys.value) : t =
@@ -233,3 +233,34 @@ let leaf_node_insert (cursor : t) (key : Keys.value) (value_pointer : int) :
         Btree.write_node cursor.tree node cursor.page_num
       end
     end
+
+let tree_start (tree : Btree.t) : t =
+  (* let root_node = Btree.get_node tree tree.root_num in *)
+  (* let num_cells = root_node.cur_size in *)
+  (* let eot = num_cells = 0 in *)
+
+  (*cursor at key (id) 0: HACKY *)
+  let cursor = tree_find tree (Keys.Integer (Int32.of_int 0)) in
+  let node = Btree.get_node tree cursor.page_num in
+  let num_cells = node.cur_size in
+  let eot = num_cells = 0 in
+
+  { tree; page_num = cursor.page_num; cell_num = 0; end_of_table = eot }
+
+let collect_keys (tree : Btree.t) : int list =
+  let cursor = tree_start tree in
+
+  let rec collect acc =
+    if cursor.end_of_table then
+      List.rev acc
+    else
+      let node = Btree.get_node tree cursor.page_num in
+      let key =
+        match node.keys.(cursor.cell_num) with
+        | Keys.Integer n -> Int32.to_int n
+        | Keys.Varchar _ -> failwith "Only handles int keys atm"
+      in
+      cursor_advance cursor;
+      collect (key :: acc)
+  in
+  collect []

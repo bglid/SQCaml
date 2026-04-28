@@ -5,6 +5,7 @@ type t = {
   mutable root_num : int;
 }
 (** Struct for the B+ Tree *)
+val unused_pointer_serial : int (*0xDDDDDDDD *)
 
 val serialize : Nodes.t -> int -> Page.Page.t
 (** Takes B+ tree node [t] and serializes it to a [Page.t], then writes to disk

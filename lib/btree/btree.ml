@@ -57,7 +57,10 @@ let get_num_keys (block_size : int) (key_type : Keys.t) : int =
   (* 12 bytes needed for metadata + 4 bytes for final sib pointer*)
   (block_size - 16) / (4 + Keys.size_of_key key_type)
 
-let unused_pointer_serial = 3722304989 (*0xDDDDDDDD *)
+let unused_pointer_serial_i32 = Int32.of_string "0xDDDDDDDD"
+let unused_pointer_serial = Int32.to_int unused_pointer_serial_i32
+(*3722304989*)
+(*0xDDDDDDDD *)
 
 let deserialize (page : Page.Page.t) (key_type : Keys.t) (block_size : int) :
     Nodes.t =
