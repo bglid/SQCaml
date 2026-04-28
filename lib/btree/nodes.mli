@@ -20,3 +20,6 @@ type t = {
 val serialize_node : node_type -> Int32.t
 val int32_to_node_t : Int32.t -> node_type
 val print_leaf_node : t -> string
+val print_internal_node : t -> string
+val internal_node_child_pointer : t -> int -> int
+val internal_node_key : t -> int -> Keys.value

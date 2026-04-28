@@ -121,6 +121,13 @@ let get_node (btree : t) (p : int) : Nodes.t =
   in
   deserialize page btree.key block_size
 
+(* getting the key value at the max of the node*)
+let get_node_max_key (node : Nodes.t) : Keys.value =
+  if node.cur_size = 0 then
+    failwith "Empty node!!!!!! Please pass in an initialized node"
+  else
+    node.keys.(node.cur_size - 1)
+
 [@@@warning "-32"]
 
 let empty_node (btree : t) : Nodes.t =
@@ -175,5 +182,43 @@ let open_btree (storage_m : Storage_manager.t) (key_type : Keys.t) : t =
 [@@@warning "-32"]
 
 let print_tree (tree : t) : string =
-  let root_node = get_node tree tree.root_num in
-  Nodes.print_leaf_node root_node
+  let rec print_node (page_num : int) (indent : int) : string =
+    let node = get_node tree page_num in
+    let prefix = String.make indent ' ' in
+
+    match node.node_t with
+    | Nodes.Leaf -> prefix ^ Nodes.print_leaf_node node
+    | Nodes.Internal ->
+        let header = prefix ^ Nodes.print_internal_node node in
+        let keys =
+          String.concat ""
+            (List.init node.cur_size (fun i ->
+                 match node.keys.(i) with
+                 | Keys.Integer n ->
+                     prefix ^ Printf.sprintf "- %d\n" (Int32.to_int n)
+                 | Keys.Varchar v -> prefix ^ Printf.sprintf "- %s\n" v))
+        in
+        let children =
+          String.concat ""
+            (List.init (node.cur_size + 1) (fun i ->
+                 let child_page_num = node.pointers.(i) in
+                 prefix
+                 ^ Printf.sprintf " child %d -> page %d\n" i child_page_num
+                 ^ print_node child_page_num (indent + 4)))
+        in
+        header ^ keys ^ children
+  in
+  print_node tree.root_num 0
+
+let create_new_root (tree : t) ~(left_child_page_num : int)
+    ~(left_child : Nodes.t) ~(right_child_page_num : int) : unit =
+  (*create new root*)
+  let root = empty_node tree in
+  root.node_t <- Nodes.Internal;
+  root.parent <- 0;
+  root.cur_size <- 1;
+  (* update nodes as children*)
+  root.pointers.(0) <- left_child_page_num;
+  root.keys.(0) <- get_node_max_key left_child;
+  root.pointers.(1) <- right_child_page_num;
+  write_node tree root tree.root_num

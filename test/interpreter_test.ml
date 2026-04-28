@@ -13,7 +13,7 @@ let test_helper (exec : Interpreter.execution_t) : string =
   | Interpreter.Error err -> err
   | Interpreter.Help _ -> "help" (* need to improve this *)
 
-let tmpdb = Db_session.open_db "sqcaml.db"
+let tmpdb = Db_session.open_db ~block_size:4096 "test.db"
 
 let test_interpreted_int () =
   let expr = Interpreter.interpret tmpdb "22" in

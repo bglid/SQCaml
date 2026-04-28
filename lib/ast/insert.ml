@@ -34,9 +34,6 @@ let execute_insert (db : Db_session.t) (preped_insert : t) : string =
     && Keys.equals leaf.keys.(cursor.cell_num) key_to_insert
   then
     "duplicate key"
-    (* getting the curr capacity to guard against*)
-  else if leaf.cur_size >= leaf.capacity then
-    failwith "HELP! please implement splitting plz."
   else
     (* serialize the page and write to a block! *)
     let page =

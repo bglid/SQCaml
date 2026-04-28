@@ -28,8 +28,19 @@ val get_node : t -> int -> Nodes.t
 (** Get a block from the btree [t] and deserializeit using the pointer [p] into
     a btree node *)
 
+val empty_node : t -> Nodes.t
+(** Given Btree [t], return an empty node *)
+
 val open_btree : Storage_manager.t -> Keys.t -> t
 (** Opens btree given [storage manager] and [key type]. If it doesn't exist,
     creates a new btree *)
 
 val print_tree : t -> string
+
+val create_new_root :
+  t ->
+  left_child_page_num:int ->
+  left_child:Nodes.t ->
+  right_child_page_num:int ->
+  unit
+(** Creates a new root node when splitting at root. *)
