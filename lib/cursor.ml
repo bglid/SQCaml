@@ -66,12 +66,43 @@ let leaf_node_find (tree : Btree.t) (page_num : int) (key : Keys.value) : t =
       { tree; page_num; cell_num; end_of_table = cell_num = node.cur_size }
     end
 
+(* Very similar to leaf node find function*)
+let internal_node_find (tree : Btree.t) (page_num : int) (key : Keys.value) : t
+    =
+  let rec binary_search (n : Nodes.t) (min_i : int) (max_i : int) : int =
+    if min_i = max_i then
+      min_i
+    else
+      let idx = (max_i + min_i) / 2 in
+      let key_idx = n.keys.(idx) in
+      if Keys.equals key key_idx then
+        idx
+      else if Keys.less_than key key_idx then
+        let max_i = idx in
+        binary_search n min_i max_i
+      else
+        let min_i = idx + 1 in
+        binary_search n min_i max_i
+  in
+
+  let node = Btree.get_node tree page_num in
+
+  match node.node_t with
+  | Nodes.Leaf -> failwith "Cannot do internal_node_find on a Leaf node"
+  | Nodes.Internal -> begin
+      let min_index = 0 in
+      let one_past_max_idx = node.cur_size in
+
+      let cell_num = binary_search node min_index one_past_max_idx in
+      { tree; page_num; cell_num; end_of_table = cell_num = node.cur_size }
+    end
+
 (* returns the position of the cursor at said key*)
 let tree_find (tree : Btree.t) (key : Keys.value) : t =
   let root_node = Btree.get_node tree tree.root_num in
   match root_node.node_t with
   | Nodes.Leaf -> leaf_node_find tree tree.root_num key
-  | Nodes.Internal -> failwith "Not implemented yet"
+  | Nodes.Internal -> internal_node_find tree tree.root_num key
 
 let distribute_node_keys ~(old_node : Nodes.t) ~(new_node : Nodes.t)
     ~(insert_idx : int) ~(new_key : Keys.value) ~(new_pointer : int)
@@ -180,11 +211,13 @@ let leaf_node_insert (cursor : t) (key : Keys.value) (value_pointer : int) :
   if num_cells >= node.capacity then
     leaf_node_split_and_insert cursor key value_pointer
     (* else a regular split *)
-  else if cursor.cell_num < num_cells then
-    shift_cells cursor node num_cells;
+  else begin
+    if cursor.cell_num < num_cells then
+      shift_cells cursor node num_cells;
 
-  node.cur_size <- node.cur_size + 1;
-  node.keys.(cursor.cell_num) <- key;
-  node.pointers.(cursor.cell_num) <- value_pointer;
+    node.cur_size <- node.cur_size + 1;
+    node.keys.(cursor.cell_num) <- key;
+    node.pointers.(cursor.cell_num) <- value_pointer;
 
-  Btree.write_node cursor.tree node cursor.page_num
+    Btree.write_node cursor.tree node cursor.page_num
+  end
