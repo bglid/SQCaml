@@ -177,6 +177,64 @@ let test_internal_find_after_split () =
       Db_session.close_db db
     end
 
+let test_scan_mlevel_btree () =
+  let collect_keys_with_cursor (tree : Btree.t) : int list =
+    let cursor = Cursor.tree_start tree in
+
+    let rec collect acc =
+      if cursor.end_of_table then
+        List.rev acc
+      else
+        let node = Btree.get_node tree cursor.page_num in
+        let key =
+          match node.keys.(cursor.cell_num) with
+          | Keys.Integer n -> Int32.to_int n
+          | Keys.Varchar _ -> failwith "Only handles int keys atm"
+        in
+        Cursor.cursor_advance cursor;
+        collect (key :: acc)
+    in
+    collect []
+  in
+  let db_dir = "tmp_split_test.db" in
+  if Sys.file_exists db_dir then
+    Sys.command ("rm -rf " ^ db_dir) |> ignore;
+
+  let db = Db_session.open_db ~block_size:256 db_dir in
+  insert_records db 1 36;
+
+  let root = Btree.get_node db.index db.index.root_num in
+
+  match root.node_t with
+  | Nodes.Leaf -> failwith "BAD!!!! Shouldn't be a leaf aftera split"
+  | Nodes.Internal -> begin
+      Alcotest.(check int) "root has 1 sep" 1 root.cur_size;
+
+      let left_page = root.pointers.(0) in
+      let right_page = root.pointers.(1) in
+
+      let left_child = Btree.get_node db.index left_page in
+      let right_child = Btree.get_node db.index right_page in
+
+      (*check sib and parent*)
+      Alcotest.(check int)
+        "Sibling pointer points to right leaf" right_page
+        left_child.pointers.(left_child.capacity);
+
+      Alcotest.(check int)
+        "left child points to parent" db.index.root_num left_child.parent;
+
+      Alcotest.(check int)
+        "right child points to parent" db.index.root_num right_child.parent;
+
+      (*check multi-level scan by building a list of keys from leafs*)
+      let keys = collect_keys_with_cursor db.index in
+      Alcotest.(check (list int))
+        "Check multi-level btree scan works"
+        (List.init 35 (fun i -> i + 1))
+        keys
+    end
+
 let tests =
   [
     Alcotest.test_case "Correct sorting" `Quick test_bsearch;
@@ -188,4 +246,6 @@ let tests =
     Alcotest.test_case "Check children node type" `Quick test_node_split_child;
     Alcotest.test_case "Testing root split partitions to child nodes correctly"
       `Quick test_internal_find_after_split;
+    Alcotest.test_case "Testing multi-level btree scans" `Quick
+      test_scan_mlevel_btree;
   ]
