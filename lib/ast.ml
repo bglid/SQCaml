@@ -21,17 +21,8 @@ type expr =
   | Binop of binop_t * expr * expr
 [@@deriving show]
 
-(*NOTE: MOVE TO OWN MODULE*)
-type create_t = {
-  table_name : string;
-  columns : string list;
-}
-[@@deriving show]
-(** Handles creating new tables *)
-
 (** Statments like INSERT *)
 type statement =
-  | Create of create_t
   | Insert of Insert.t
   | Select of Select.t
   | Expr of expr

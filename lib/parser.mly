@@ -72,16 +72,6 @@ constant_list:
   | constant { [$1] }
   | constant COMMA constant_list {$1 :: $3}
 
-predicate:
-  | field STRUCT_COMP expr {}
-
-
-statement:
-  (* | SELECT; e = expr { Statement (Select e) } *)
-  (* | SELECT LPAREN field_list RPAREN FROM IDENTIFIER WHERE predicate {Statement (Select (Select.make $3 (Some $8) ))} *)
-  | SELECT LPAREN field_list RPAREN FROM IDENTIFIER {Statement (Select (Select.make $3  ))}
-  | INSERT INTO IDENTIFIER LPAREN field_list RPAREN VALUES LPAREN constant_list RPAREN { Statement ( Insert (Insert.make $5 $9))}
-  | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
 
 
 field_list:
@@ -112,3 +102,22 @@ expr:
   | e1 = expr; STRUCT_COMP; e2 = expr { Binop (Comp, e1, e2) } 
   ;
 
+predicate:
+      | field = IDENTIFIER; STRUCT_COMP; value = constant 
+          {{ Select.field; op = Select.Eq; value}}
+      | field = IDENTIFIER; NEQ; value = constant 
+          {{ Select.field; op = Select.Neq; value}}
+
+
+statement:
+  (* | SELECT; e = expr { Statement (Select e) } *)
+  | SELECT LPAREN field_list RPAREN FROM IDENTIFIER WHERE predicate 
+      {Statement (Select (Select.make ~predicate:$8 $3 ))}
+
+  | SELECT LPAREN field_list RPAREN FROM IDENTIFIER 
+      {Statement (Select (Select.make $3  ))}
+
+  | INSERT INTO IDENTIFIER LPAREN field_list RPAREN VALUES LPAREN constant_list RPAREN 
+        { Statement ( Insert (Insert.make $5 $9))}
+
+  | unk = UNK_COM; {Statement (Unk_stmt ("error: " ^ unk ^ " is an unknown command") )}
