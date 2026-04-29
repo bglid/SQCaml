@@ -6,8 +6,8 @@
 [![Build](https://github.com/bglid/SQCaml/actions/workflows/build.yml/badge.svg)](https://github.com/bglid/SQCaml/actions/workflows/build.yml)
 
 
-*Minimal OCaml B+ tree storage engine with a SQL-like REPL*
-*Mostly for learning*
+◥ *Minimal OCaml B+ tree storage engine with a SQL-like REPL* ◤
+◥ *Mostly for learning* ◤
 - - -
 </div>
 
@@ -27,10 +27,10 @@ High-level overview of todos/roadmap
 
 |  #  | Step                                                    | Status |
 | :-: | ------------------------------------------------------- | :----: |
-|  1  | Basic REPL and interpreter setup                        |   - [x]   |
-|  2  | Disk-writing API                                        |   - [x]   |
+|  1  | Basic REPL and interpreter setup                        |   ✔    |
+|  2  | Disk-writing API                                        |   ✔    |
 |  3  | B+ Tree algorithms                                      |*in progress*|
-|  4  | Basic Top-level SQL Parsing                             |   - [x]    |
+|  4  | Basic Top-level SQL Parsing                             |   ✔    |
 |  5  | Stretch goals... TBD                                    |   ❌   |
 
 - - -
@@ -38,3 +38,5 @@ High-level overview of todos/roadmap
 ###### 1. A lot of the lower-level disk-writing API was reimplemented from the work by [Artjom Plaunov](https://artjomplaunov.github.io/database/b+/tree/2025/01/13/btrees1.html) - check out their work.
 ###### 2. Ideas were also taken from the well-known [Let's Build a Simple Database](https://cstack.github.io/db_tutorial/). 
 - - -
+
+🐫︎
