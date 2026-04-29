@@ -1,3 +1,4 @@
+(* ops for predicates*)
 type pred_op =
   | Eq
   | Neq
@@ -10,7 +11,6 @@ type predicate = {
 }
 [@@deriving show]
 
-(* abstraction to make a module for preparing and executing select statement*)
 type t = {
   fields : string list;
   predicate : predicate option;
@@ -56,28 +56,8 @@ let comp_constants (op : pred_op) (left : Constant.t) (right : Constant.t) :
   | _ -> failwith "Bad!"
 
 let row_good_predicate (pred : predicate) (row : Table.row_t) : bool = 
-  let left = row_field_value pred.field row
-  in
+  let left = row_field_value pred.field row in
   comp_constants pred.op left pred.value
-(* let execute_predicate (select : t) (cond : pred_condition) (db : Db_session.t) : string list =  *)
-(*   let cursor = Cursor.tree_start db.index in *)
-(*   let rec cursor_select (c : Cursor.t) (acc : string list) : string list = *)
-(*     if c.end_of_table then *)
-(*       List.rev acc *)
-(*     else *)
-(*       (* check this!!!!*) *)
-(*       let row_page_num = Cursor.cursor_value c in *)
-(**)
-(*       let page = *)
-(*         Storage_manager.get_block ~storage_m:db.storage_manager *)
-(*           ~block_num:row_page_num *)
-(*       in *)
-(**)
-(*       let row = Table.deserialize_from_page page in *)
-(*           Cursor.cursor_advance c; *)
-(*           let str_row = render_fields select.fields row ^ "\n" in *)
-(*           cursor_select c (str_row :: acc) *)
-(*         end *)
 
 let execute_select ?prepped_select (db : Db_session.t) : string =
   let cursor = Cursor.tree_start db.index in
@@ -93,7 +73,7 @@ let execute_select ?prepped_select (db : Db_session.t) : string =
       in
 
       let row = Table.deserialize_from_page page in
-        Cursor.cursor_advance c;
+      Cursor.cursor_advance c;
       match prepped_select with
       | None -> begin
           let str_row =
@@ -103,22 +83,19 @@ let execute_select ?prepped_select (db : Db_session.t) : string =
           cursor_select c (str_row :: acc)
         end
         (* gross hack*)
-      | Some prep -> begin
+      | Some prep -> 
           let pred_pass = 
             match prep.predicate with
               | None -> true
               | Some p -> row_good_predicate p row
               in
+        (* basically will only "query" fields if they match*)
           if pred_pass then
-                    begin
-                    let str_row = render_fields prep.fields row ^ "\n" in
-                    cursor_select c (str_row :: acc)
-                      end
-            else begin
-                    cursor_select c acc
-              end
-  end
+                let str_row = render_fields prep.fields row ^ "\n" in
+                cursor_select c (str_row :: acc)
+            else 
+                cursor_select c acc
+        in
 
-  in
   let res = cursor_select cursor [] in
   List.fold_left (fun acc l -> acc ^ l) "" res
