@@ -168,6 +168,23 @@ let test_select_statement_recognized () =
   in
   Alcotest.(check bool)
     "select accepted for execution" true
+    (String.starts_with ~prefix:"f" res)
+
+let test_select_id () =
+  let res =
+    test_helper
+      (Interpreter.interpret tmpdb "SELECT (id, rail_line, id) FROM Mbta")
+  in
+  Alcotest.(check bool)
+    "select accepted for execution" true
+    (String.starts_with ~prefix:"1" res)
+
+let test_select_weird_casing () =
+  let res =
+    test_helper (Interpreter.interpret tmpdb "SELECT (Id, Rail_line) FROM Mbta")
+  in
+  Alcotest.(check bool)
+    "select accepted for execution" true
     (String.starts_with ~prefix:"1" res)
 
 let tests =
@@ -212,4 +229,7 @@ let tests =
       test_insert_statement_recognized;
     Alcotest.test_case "select recognized" `Quick
       test_select_statement_recognized;
+    Alcotest.test_case "goofy select id works" `Quick test_select_id;
+    Alcotest.test_case "select with odd casing works" `Quick
+      test_select_weird_casing;
   ]

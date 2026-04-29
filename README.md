@@ -5,9 +5,9 @@
 [![OCaml](https://img.shields.io/badge/OCaml-EC6813?logo=ocaml&logoColor=fff)](#)
 [![Build](https://github.com/bglid/SQCaml/actions/workflows/build.yml/badge.svg)](https://github.com/bglid/SQCaml/actions/workflows/build.yml)
 
-**wip**
 
 *Minimal OCaml B+ tree storage engine with a SQL-like REPL*
+*Mostly for learning*
 - - -
 </div>
 
@@ -27,10 +27,10 @@ High-level overview of todos/roadmap
 
 |  #  | Step                                                    | Status |
 | :-: | ------------------------------------------------------- | :----: |
-|  1  | Basic REPL and interpreter setup                        |   ✅   |
-|  2  | Disk-writing API                                        |   ✅   |
+|  1  | Basic REPL and interpreter setup                        |   - [x]   |
+|  2  | Disk-writing API                                        |   - [x]   |
 |  3  | B+ Tree algorithms                                      |*in progress*|
-|  4  | Basic Top-level SQL Parsing                             |   ❌   |
+|  4  | Basic Top-level SQL Parsing                             |   - [x]    |
 |  5  | Stretch goals... TBD                                    |   ❌   |
 
 - - -

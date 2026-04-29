@@ -19,6 +19,7 @@
       "INTO", INTO;
       "VALUES", VALUES;
       "FROM", FROM;
+      "WHERE", WHERE;
     ]
 }
 

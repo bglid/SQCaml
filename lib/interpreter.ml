@@ -125,9 +125,9 @@ let execute_meta (db : Db_session.t) (md : Ast.meta_command) : execution_t =
 let execute_statement (db : Db_session.t) (stmt : Ast.statement) : execution_t =
   (* Need to improve this once the B+ is implemented *)
   match stmt with
-  | Ast.Create _ -> Ok
+  (* | Ast.Create _ -> Ok *)
   | Ast.Insert i -> Message (Insert.execute_insert db i)
-  | Ast.Select s -> Message (Select.execute_select db s)
+  | Ast.Select s -> Message (Select.execute_select ?prepped_select:(Some s) db)
   | Ast.Expr e -> Message (e |> eval |> string_of_val)
   | Ast.Unk_stmt u -> Message u
 
