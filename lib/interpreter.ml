@@ -69,10 +69,6 @@ let _float_step (bop : Ast.binop_t) (e1 : float) (e2 : float) =
   | (Ast.Lt | Ast.Gt | Ast.Leq | Ast.Geq | Ast.Neq | Ast.Comp), _, _ ->
       _num_comp_step bop e1 e2
 
-(* let _table_step (table : Ast.table) = *)
-(*   match table with *)
-(*   | Ast.Id id -> Ast.String id *)
-
 (** [step e] takes a single step of eval of [e]*)
 let rec step e : Ast.expr =
   match e with
@@ -84,7 +80,6 @@ let rec step e : Ast.expr =
       binop_step op e1 e2
   | Ast.Binop (op, e1, e2) when is_value e1 -> Ast.Binop (op, e1, step e2)
   | Ast.Binop (op, e1, e2) -> Ast.Binop (op, step e1, e2)
-(* | Ast.Table id -> _table_step id *)
 
 (* handles int and float by converting int -> float *)
 and binop_step (bop : Ast.binop_t) (e1 : Ast.expr) (e2 : Ast.expr) =
@@ -123,9 +118,7 @@ let execute_meta (db : Db_session.t) (md : Ast.meta_command) : execution_t =
   | Ast.Unk_mcmd _ -> Error "unk meta command: Failure"
 
 let execute_statement (db : Db_session.t) (stmt : Ast.statement) : execution_t =
-  (* Need to improve this once the B+ is implemented *)
   match stmt with
-  (* | Ast.Create _ -> Ok *)
   | Ast.Insert i -> Message (Insert.execute_insert db i)
   | Ast.Select s -> Message (Select.execute_select ?prepped_select:(Some s) db)
   | Ast.Expr e -> Message (e |> eval |> string_of_val)

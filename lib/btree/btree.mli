@@ -37,6 +37,7 @@ val open_btree : Storage_manager.t -> Keys.t -> t
     creates a new btree *)
 
 val print_tree : t -> string
+    (** Takes in a btree [t] and prints out it's internal and leaf nodes *)
 
 val create_new_root :
   t ->

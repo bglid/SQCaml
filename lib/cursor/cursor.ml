@@ -1,5 +1,3 @@
-(* struct/module for pointing to rows in a table *)
-
 (*This will be what is used to do leaf searching and full-table scans *)
 type t = {
   tree : Btree.t;
@@ -104,7 +102,6 @@ let rec internal_node_find (tree : Btree.t) (page_num : int) (key : Keys.value)
       | Nodes.Internal -> internal_node_find tree child_page_num key
     end
 
-(* returns the position of the cursor at said key*)
 let tree_find (tree : Btree.t) (key : Keys.value) : t =
   let root_node = Btree.get_node tree tree.root_num in
   match root_node.node_t with
@@ -143,7 +140,6 @@ let distribute_node_keys ~(old_node : Nodes.t) ~(new_node : Nodes.t)
   in
   loop (total_entries - 1)
 
-(* Create a new node and move half the cells and update parent *)
 let leaf_node_split_and_insert (cursor : t) (key : Keys.value)
     (value_pointer : int) : unit =
   let tree = cursor.tree in
@@ -235,10 +231,6 @@ let leaf_node_insert (cursor : t) (key : Keys.value) (value_pointer : int) :
     end
 
 let tree_start (tree : Btree.t) : t =
-  (* let root_node = Btree.get_node tree tree.root_num in *)
-  (* let num_cells = root_node.cur_size in *)
-  (* let eot = num_cells = 0 in *)
-
   (*cursor at key (id) 0: HACKY *)
   let cursor = tree_find tree (Keys.Integer (Int32.of_int 0)) in
   let node = Btree.get_node tree cursor.page_num in

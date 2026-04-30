@@ -1,5 +1,3 @@
-[@@@warning "-69"]
-
 (* minimal B+ tree struct *)
 type t = {
   storage_m : Storage_manager.t; (* file used to store to disk *)
@@ -7,8 +5,6 @@ type t = {
   mutable root : Nodes.t;
   mutable root_num : int;
 }
-
-[@@@warning "+69"]
 
 let serialize (node : Nodes.t) (block_size : int) : Page.Page.t =
   (* recursive iterative helpers*)
@@ -131,8 +127,6 @@ let get_node_max_key (node : Nodes.t) : Keys.value =
   else
     node.keys.(node.cur_size - 1)
 
-[@@@warning "-32"]
-
 let empty_node (btree : t) : Nodes.t =
   let block_size = File_manager.get_blocksize btree.storage_m.file_manager in
   let key_type = btree.key in
@@ -181,8 +175,6 @@ let open_btree (storage_m : Storage_manager.t) (key_type : Keys.t) : t =
     let root_page = Storage_manager.get_block ~storage_m ~block_num:root_num in
     let root_node = deserialize root_page key_type block_size in
     { storage_m; key = key_type; root = root_node; root_num }
-
-[@@@warning "-32"]
 
 let print_tree (tree : t) : string =
   let rec print_node (page_num : int) (indent : int) : string =

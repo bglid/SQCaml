@@ -154,7 +154,7 @@ let test_insert_statement_recognized () =
   let res =
     test_helper
       (Interpreter.interpret tmpdb
-         "INSERT INTO Mbta (Id, stop_name, rail_line) VALUES (1, 'f', 'g') ")
+         "INSERT INTO Mbta (Id, stop_name, rail_line) VALUES (1, 'f', 'G') ")
   in
   Alcotest.(check bool)
     "insert accepted for execution" true
@@ -184,8 +184,73 @@ let test_select_weird_casing () =
     test_helper (Interpreter.interpret tmpdb "SELECT (Id, Rail_line) FROM Mbta")
   in
   Alcotest.(check bool)
-    "select accepted for execution" true
+    "select weird casing accepted " true
     (String.starts_with ~prefix:"1" res)
+
+let test_predicates () =
+  let _ =
+    test_helper
+      (Interpreter.interpret tmpdb
+         "INSERT INTO Mbta (Id, stop_name, rail_line) VALUES (5, 'englewood', \
+          'G') ")
+  in
+  let _ =
+    test_helper
+      (Interpreter.interpret tmpdb
+         "INSERT INTO Mbta (Id, stop_name, rail_line) VALUES (10, 'maverick', \
+          'B') ")
+  in
+  (* predicate tests *)
+  let res_eq =
+    test_helper
+      (Interpreter.interpret tmpdb
+         "SELECT (Rail_line) FROM Mbta WHERE stop_name == 'maverick'")
+  in
+
+  Alcotest.(check bool)
+    "WHERE == predicate accepted" true
+    (String.starts_with ~prefix:"B" res_eq);
+
+  let res_neq =
+    test_helper
+      (Interpreter.interpret tmpdb
+         "SELECT (Rail_line) FROM Mbta WHERE stop_name <> 'maverick'")
+  in
+  Alcotest.(check bool)
+    "WHERE <> predicate accepted" true
+    (String.starts_with ~prefix:"G" res_neq);
+
+  let res_lt =
+    test_helper
+      (Interpreter.interpret tmpdb "SELECT (Rail_line) FROM Mbta WHERE id < 10")
+  in
+  Alcotest.(check bool)
+    "WHERE < predicate accepted" true
+    (String.starts_with ~prefix:"G" res_lt);
+
+  let res_leq =
+    test_helper
+      (Interpreter.interpret tmpdb "SELECT (Rail_line) FROM Mbta WHERE id <= 1")
+  in
+  Alcotest.(check bool)
+    "WHERE <= predicate accepted" true
+    (String.starts_with ~prefix:"G" res_leq);
+
+  let res_gt =
+    test_helper
+      (Interpreter.interpret tmpdb "SELECT (Rail_line) FROM Mbta WHERE id > 5")
+  in
+  Alcotest.(check bool)
+    "WHERE < predicate accepted" true
+    (String.starts_with ~prefix:"B" res_gt);
+
+  let res_geq =
+    test_helper
+      (Interpreter.interpret tmpdb "SELECT (Rail_line) FROM Mbta WHERE id >= 10")
+  in
+  Alcotest.(check bool)
+    "WHERE <= predicate accepted" true
+    (String.starts_with ~prefix:"B" res_geq)
 
 let tests =
   [
@@ -232,4 +297,5 @@ let tests =
     Alcotest.test_case "goofy select id works" `Quick test_select_id;
     Alcotest.test_case "select with odd casing works" `Quick
       test_select_weird_casing;
+    Alcotest.test_case "Select with predicates works" `Quick test_predicates;
   ]

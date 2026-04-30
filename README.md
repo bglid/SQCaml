@@ -32,6 +32,33 @@ High-level overview of todos/roadmap
 |  4  | Basic Top-level SQL Parsing                             |   ✔    |
 |  5  | Stretch goals... TBD                                    |   ❌   |
 
+- - - 
+## How-to run:
+
+This project is built and executed with `Dune`. After cloning the repo, from the project root, run:
+
+```bash
+dune build
+```
+
+To start the REPL, run
+```bash
+dune exec SQCaml 
+```
+
+You can then run SQL-style commands like:
+```sql
+INSERT INTO Mbta (id, stop_name, rail_line)
+VALUES (100, 'Englewood ave.', 'G');
+```
+
+> [!IMPORTANT]
+> The current implementaiton only has a fixed single-table schema of:
+> ```SQL
+> (id:int, stop_name:varchar, rail_line:varchar)
+>```
+> For a list of accepted commands, see [docs](./docs/commands.md)
+
 - - -
 ## Acknowledgements
 ###### 1. A lot of the lower-level disk-writing API was reimplemented from the work by [Artjom Plaunov](https://artjomplaunov.github.io/database/b+/tree/2025/01/13/btrees1.html) - check out their work.
