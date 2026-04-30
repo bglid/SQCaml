@@ -63,8 +63,6 @@ let internal_node_child_pointer (node : t) (child_num : int) : int =
       let num_keys = node.cur_size in
       if child_num > num_keys then
         failwith "Tried to access child num that's greater than num of keys!"
-      else if child_num = num_keys then
-        node.pointers.(num_keys)
       else
         node.pointers.(child_num)
 
