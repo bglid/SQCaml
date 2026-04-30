@@ -57,7 +57,6 @@ VALUES (100, 'Englewood ave.', 'G');
 > ```SQL
 > (id:int, stop_name:varchar, rail_line:varchar)
 >```
-> Based off of Boston's Mbta system
 > For a list of accepted commands, see [docs](./docs/commands.md)
 
 - - -
