@@ -54,8 +54,8 @@ VALUES (100, 'Englewood ave.', 'G');
 
 > [!IMPORTANT]
 > The current implementaiton only has a fixed single-table schema of:
-> ```ocaml
-> (id:int, stop_name:string, rail_line:string)
+> ```SQL
+> (id:int, stop_name:varchar, rail_line:varchar)
 >```
 > Based off of Boston's Mbta system
 > For a list of accepted commands, see [docs](./docs/commands.md)
