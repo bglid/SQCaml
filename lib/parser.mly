@@ -103,14 +103,26 @@ expr:
   ;
 
 predicate:
-      | field = IDENTIFIER; STRUCT_COMP; value = constant 
-          {{ Select.field; op = Select.Eq; value}}
+      /* Select predicates */
+      | field = IDENTIFIER; LT; value = constant 
+          {{ Select.field; op = Select.Lt; value}}
+
+      | field = IDENTIFIER; GT; value = constant 
+          {{ Select.field; op = Select.Gt; value}}
+
+      | field = IDENTIFIER; LEQ; value = constant 
+          {{ Select.field; op = Select.Leq; value}}
+
+      | field = IDENTIFIER; GEQ; value = constant 
+          {{ Select.field; op = Select.Geq; value}}
+
       | field = IDENTIFIER; NEQ; value = constant 
           {{ Select.field; op = Select.Neq; value}}
 
+      | field = IDENTIFIER; STRUCT_COMP; value = constant 
+          {{ Select.field; op = Select.Eq; value}}
 
 statement:
-  (* | SELECT; e = expr { Statement (Select e) } *)
   | SELECT LPAREN field_list RPAREN FROM IDENTIFIER WHERE predicate 
       {Statement (Select (Select.make ~predicate:$8 $3 ))}
 

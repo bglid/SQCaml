@@ -2,6 +2,10 @@
 type pred_op =
   | Eq
   | Neq
+  | Lt
+  | Gt
+  | Leq
+  | Geq
 [@@deriving show]
 
 type predicate = {
@@ -47,11 +51,19 @@ let comp_constants (op : pred_op) (left : Constant.t) (right : Constant.t) :
       match op with
       | Eq -> l = r
       | Neq -> l <> r
+      | Lt -> l < r
+      | Gt -> l > r
+      | Leq -> l <= r
+      | Geq -> l >= r
     end
   | Constant.ConstStr l, Constant.ConstStr r -> begin
       match op with
       | Eq -> l = r
       | Neq -> l <> r
+      | Lt -> l < r
+      | Gt -> l > r
+      | Leq -> l <= r
+      | Geq -> l >= r
     end
   | _ -> failwith "Bad!"
 
