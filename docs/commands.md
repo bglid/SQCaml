@@ -3,7 +3,7 @@
 *Note, all commands are ended by a* `;`
 *All commands are case sensitive*
 - - - 
-### INSERT
+## INSERT
 
 ##### Inserts data into storage engine
 
@@ -32,7 +32,7 @@ INSERT INTO Mbta (id, stop_name, rail_line) VALUES (100, 'Englewood ave.', 'G');
 ```
 
 
-### SELECT
+## SELECT
 
 ##### Queries data from the storage engine
 
@@ -68,6 +68,12 @@ WHERE ... == ...;
 SELECT FROM Mbta (stop_name)
 WHERE rail_line <> 'G';  -- Returns all stops not on the greenline (thank god)
 ```
+- - -
+## Meta commands
+
+-  `.help;` -> Prints out help menu
+-  `.tree;` -> Prints out current tree layout and ids
+-  `.exit;` -> Exits SQCaml
 
 - - -
 That's all I have for now!
