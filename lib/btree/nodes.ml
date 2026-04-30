@@ -3,8 +3,6 @@ type node_type =
   | Internal
 [@@deriving show]
 
-[@@@warning "-69"]
-
 type t = {
   (* There are 2 node types, leaf or internal *)
   mutable node_t : node_type;
@@ -17,8 +15,6 @@ type t = {
   key_type : Keys.t;
 }
 [@@deriving show]
-
-[@@@warning "+69"]
 
 (* Constants for serialization*)
 let leaf_serial = Int32.of_int 2863311530 (* 0xAAAAAAAA *)
